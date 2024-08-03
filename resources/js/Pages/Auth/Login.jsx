@@ -26,10 +26,10 @@ function Login() {
             <h6 className="fw-light">Sign in to continue.</h6>
             <form className="pt-3" onSubmit={(e) => { tryLogin(e) }}>
                 <div className="form-group">
-                    <input value={loginForm.email} onChange={(e) => { handleOnChange(e) }} type="email" className="form-control form-control-lg" id="email" autoComplete='email' name='email' placeholder="Email" />
+                    <input value={loginForm.email} onChange={(e) => { handleOnChange(e) }} type="email" className="rounded-pill form-control form-control-lg" id="email" autoComplete='email' name='email' placeholder="Email" />
                 </div>
                 <div className="form-group">
-                    <input value={loginForm.password} onChange={(e) => { handleOnChange(e) }} type="password" className="form-control form-control-lg" autoComplete='current-password' id="password" name='password' placeholder="Password" />
+                    <input value={loginForm.password} onChange={(e) => { handleOnChange(e) }} type="password" className="rounded-pill form-control form-control-lg" autoComplete='current-password' id="password" name='password' placeholder="Password" />
                 </div>
                 <div className="mt-3 d-grid gap-2">
                     <button type='submit' className="btn btn-block btn-primary btn-lg fw-medium auth-form-btn">SIGN IN</button>

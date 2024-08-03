@@ -3,6 +3,7 @@ import Authenticated from '@/Layouts/AuthenticatedLayout';
 import React, { useEffect, useState } from 'react';
 import DropZoneForm from './Forms/DropZoneForm';
 import axios from 'axios';
+import Pagination from '@/Compponents/Pagination/Pagination';
 
 function UserList({ auth }) {
     const [formType, setformType] = useState(null);
@@ -13,6 +14,14 @@ function UserList({ auth }) {
             setuserList(response.data)
         })();
     }, []);
+
+    const paginationAccepter = async(url) => {
+       if(url){
+        const response = await axios.get(url);
+        setuserList(response.data)
+       }
+    }
+
     return (
         <Authenticated user={auth}>
             <div className="row">
@@ -30,7 +39,7 @@ function UserList({ auth }) {
                                 </span>
                             </div>
                             <div className="table-responsive pt-3">
-                                <table className="table table-striped">
+                                <table className="table table-striped overflow-y-auto">
                                     <thead>
                                         <tr className='text-center'>
                                             <th> # </th>
@@ -38,6 +47,7 @@ function UserList({ auth }) {
                                             <th> First name </th>
                                             <th> Last name </th>
                                             <th> Email </th>
+                                            <th> Phone </th>
                                             <th> Status </th>
                                             <th> Role </th>
                                             <th> Action </th>
@@ -45,26 +55,28 @@ function UserList({ auth }) {
                                     </thead>
                                     <tbody>
                                         {
-                                            userList && userList.map((user, index) => (
-                                                <tr>
+                                            userList.data && userList.data.map((user, index) => (
+                                                <tr key={index}>
                                                     <td> {index + 1} </td>
-                                                    <td> {user.account_id}</td>
+                                                    <td className='ellipsis'> {user.account_id}</td>
                                                     <td> {user.first_name} </td>
                                                     <td> {user.last_name} </td>
                                                     <td> {user.email} </td>
+                                                    <td> {user.phone||`_ _`} </td>
                                                     <td><span className="badge bg-success rounded-pill">Active</span></td>
                                                     <td><span className="badge bg-danger rounded-pill">Team Lead</span></td>
                                                     <td className='text-center'>
-                                                        <button className="btn btn-icon btn-primary btn-sm m-1"><i className='fa fa-edit'></i></button>
-                                                        <button className="btn btn-icon btn-primary btn-sm m-1"><i className='fa fa-user'></i></button>
-                                                        <button className="btn btn-icon btn-primary btn-sm m-1"><i className='fa fa-trash'></i></button>
-                                                        <button className="btn btn-icon btn-primary btn-sm m-1"><i className='fa fa-info-circle'></i></button>
+                                                        <button data-bs-toggle="tooltip" data-bs-placement="top" title="Edit User" className="btn btn-icon btn-primary btn-sm m-1"><i className='fa fa-edit'></i></button>
+                                                        <button data-bs-toggle="tooltip" data-bs-placement="top" title="Make Admin" className="btn btn-icon btn-primary btn-sm m-1"><i className='fa fa-user'></i></button>
+                                                        <button data-bs-toggle="tooltip" data-bs-placement="top" title="Delete" className="btn btn-icon btn-primary btn-sm m-1"><i className='fa fa-trash'></i></button>
+                                                        <button data-bs-toggle="tooltip" data-bs-placement="top" title="Show user information" className="btn btn-icon btn-primary btn-sm m-1"><i className='fa fa-info-circle'></i></button>
                                                     </td>
                                                 </tr>
                                             ))
                                         }
                                     </tbody>
                                 </table>
+                                <Pagination pagination={userList || []} callback={paginationAccepter} />
                             </div>
                         </div>
                     </div>

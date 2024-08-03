@@ -8,7 +8,7 @@ export default function Guest({ children, bigCard = false, detailsText = "" }) {
                 <div className="content-wrapper d-flex align-items-center auth px-0">
                     <div className="row w-100 mx-0">
                         <div className={`${!bigCard ? 'col-lg-4' : "col-md-12"} mx-auto`}>
-                            <div className="auth-form-light text-left py-5 px-4 px-sm-5">
+                            <div className="auth-form-light text-left py-5 px-4 px-sm-5 rounded-4">
                                 <div className="brand-logo">
                                     <img src={logo} alt="logo" />
                                 </div>

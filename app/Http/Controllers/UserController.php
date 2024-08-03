@@ -30,13 +30,14 @@ class UserController extends Controller
                 array_key_exists("Email", $fileData[0]) &&
                 array_key_exists("Role", $fileData[0]) &&
                 array_key_exists("First name", $fileData[0]) &&
-                array_key_exists("Last name", $fileData[0])
+                array_key_exists("Last name", $fileData[0]) &&
+                array_key_exists("Phone", $fileData[0])
             ) {
                 $response = $this->insertIntoDatabase($fileData);
                 if ($response == 0)
                     return response()->json(["status" => 0, "message" => "Something went wrong"]);
             } else
-                return response()->json(["status" => 0, "message" => "First name,Last name,Email,Role field must be include in CSV"]);
+                return response()->json(["status" => 0, "message" => "First name,Last name,Email,Role,Phone field must be include in CSV"]);
             Storage::delete($path); // Delete the file after processing
         }
         $getNewUsers = $this->getAllUsers();
@@ -81,12 +82,14 @@ class UserController extends Controller
                     'role' => $getRoleId ?? "",
                     'account_id' => Auth::user()->account_id,
                     'is_account_details' => 1,
+                    'phone' => preg_replace("/[^0-9]/", "", $row['Phone']),
                 ];
                 $lastUserData = User::create($userData);
                 unset($row['First name']);
                 unset($row['Last name']);
                 unset($row['Email']);
                 unset($row['Role']);
+                unset($row['Phone']);
                 UserDetails::create([
                     "account_id" => Auth::user()->account_id,
                     "user_id" => $lastUserData->id,
@@ -103,6 +106,6 @@ class UserController extends Controller
     /* get all user of this account */
     public function getAllUsers()
     {
-        return User::where('account_id', Auth::user()->account_id)->get();
+        return User::where('account_id', Auth::user()->account_id)->paginate(10);
     }
 }
