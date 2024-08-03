@@ -1,0 +1,26 @@
+.dropzone {
+    width: 100%;
+    height: 200px;
+    border: 2px dashed #cccccc;
+    border-radius: 10px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    cursor: pointer;
+    background-color: #ffffff;
+    transition: background-color 0.3s, border-color 0.3s;
+}
+
+.dropzone p {
+    color: #999999;
+}
+
+.dropzone.dragover {
+    background-color: #e0e7ff;
+    border-color: #6666ff;
+}
+
+.dropzone.dragover p {
+    color: #3333ff;
+}
