@@ -29,6 +29,7 @@ Route::prefix('api')->as('api.')->group(function () {
         /* usees controller group */
         Route::controller(UserController::class)->group(function () {
             Route::get("/get-all-users", 'getAllUsers')->name("get-all-users");
+            Route::get("/manually-save-users", 'manuallySaveUsers')->name("manually-save-users");
             Route::post("/upload-user-csv", "uploadUserCsv")->name("upload-user-csv");
         });
     });

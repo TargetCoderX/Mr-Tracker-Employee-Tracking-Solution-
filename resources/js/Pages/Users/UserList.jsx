@@ -4,23 +4,39 @@ import React, { useEffect, useState } from 'react';
 import DropZoneForm from './Forms/DropZoneForm';
 import axios from 'axios';
 import Pagination from '@/Compponents/Pagination/Pagination';
+import ManuallyAddUsersForm from './Forms/ManuallyAddUsersForm';
 
 function UserList({ auth }) {
-    const [formType, setformType] = useState(null);
+    const [formType, setformType] = useState("");
     const [userList, setuserList] = useState([]);
+    const [roles, setroles] = useState([]);
     useEffect(() => {
         (async () => {
             const response = await axios.get(route("api.get-all-users"));
             setuserList(response.data)
         })();
+        (async () => {
+            const response = await axios.get(route('api.all-roles'));
+            setroles(response.data);
+        })()
     }, []);
 
-    const paginationAccepter = async(url) => {
-       if(url){
-        const response = await axios.get(url);
-        setuserList(response.data)
-       }
+    const paginationAccepter = async (url) => {
+        if (url) {
+            const response = await axios.get(url);
+            setuserList(response.data)
+        }
     }
+    const renderForm = () => {
+        switch (formType) {
+            case 'manualAdder':
+                return <ManuallyAddUsersForm userList={setuserList} roles={roles} />;
+            case 'dropzone':
+                return <DropZoneForm userList={setuserList} />;
+            default:
+                return null;
+        }
+    };
 
     return (
         <Authenticated user={auth}>
@@ -34,7 +50,7 @@ function UserList({ auth }) {
                                     <p className="card-description text-dark">Users registered to your account.</p>
                                 </span>
                                 <span>
-                                    <button className="btn btn-primary btn-sm me-1" style={{ width: "150px" }}>Manualy Add Users</button>
+                                    <button className="btn btn-primary btn-sm me-1" style={{ width: "150px" }} data-bs-toggle="modal" data-bs-target="#exampleModal" onClick={(e) => { setformType("manualAdder") }}>Manualy Add Users</button>
                                     <button className="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#exampleModal" style={{ width: "150px" }} onClick={(e) => { setformType("dropzone") }}>Upload CSV</button>
                                 </span>
                             </div>
@@ -62,7 +78,7 @@ function UserList({ auth }) {
                                                     <td> {user.first_name} </td>
                                                     <td> {user.last_name} </td>
                                                     <td> {user.email} </td>
-                                                    <td> {user.phone||`_ _`} </td>
+                                                    <td> {user.phone || `_ _`} </td>
                                                     <td><span className="badge bg-success rounded-pill">Active</span></td>
                                                     <td><span className="badge bg-danger rounded-pill">Team Lead</span></td>
                                                     <td className='text-center'>
@@ -82,7 +98,7 @@ function UserList({ auth }) {
                     </div>
                 </div>
             </div>
-            <Modal form={formType == "dropzone" ? <DropZoneForm userList={setuserList} /> : ""} title="For Entering New Users Only" />
+            <Modal form={renderForm()} title="For Entering New Users Only" />
         </Authenticated>
     );
 }

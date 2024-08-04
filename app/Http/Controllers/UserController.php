@@ -85,7 +85,7 @@ class UserController extends Controller
                     'phone' => preg_replace("/[^0-9]/", "", $row['Phone']),
                 ];
                 $lastUserData = User::create($userData);
-                unset($row['First name']);
+                /*    unset($row['First name']);
                 unset($row['Last name']);
                 unset($row['Email']);
                 unset($row['Role']);
@@ -94,7 +94,7 @@ class UserController extends Controller
                     "account_id" => Auth::user()->account_id,
                     "user_id" => $lastUserData->id,
                     "user_details_json" => json_encode($row),
-                ]);
+                ]); */
             }, $fileData);
             return 1;
         } catch (\Throwable $th) {
@@ -107,5 +107,11 @@ class UserController extends Controller
     public function getAllUsers()
     {
         return User::where('account_id', Auth::user()->account_id)->paginate(10);
+    }
+
+    /* manually save users */
+    public function manuallySaveUsers(Request $request)
+    {
+        
     }
 }
