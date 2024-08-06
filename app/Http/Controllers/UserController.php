@@ -98,7 +98,7 @@ class UserController extends Controller
             }, $fileData);
             return 1;
         } catch (\Throwable $th) {
-            dd($th->getMessage());
+            // dd($th->getMessage());
             return 0;
         }
     }
@@ -106,12 +106,50 @@ class UserController extends Controller
     /* get all user of this account */
     public function getAllUsers()
     {
-        return User::where('account_id', Auth::user()->account_id)->paginate(10);
+        return User::where('account_id', Auth::user()->account_id)->orderBy('id', 'desc')->with('roleRelation')->paginate(10);
     }
 
     /* manually save users */
     public function manuallySaveUsers(Request $request)
     {
-        
+        try {
+            $userData = [
+                'first_name' => $request->first_name,
+                'last_name' => $request->last_name,
+                'email' => $request->email,
+                'password' => Hash::make("welcome!"),
+                'is_active' => 1,
+                'role' => $request->role,
+                'account_id' => Auth::user()->account_id,
+                'is_account_details' => 1,
+                'phone' => preg_replace("/[^0-9]/", "", $request->phone),
+            ];
+            User::create($userData);
+            $getAllUsers = $this->getAllUsers();
+            return response()->json(["status" => 1, "message" => "User Created Successfully", "users" => $getAllUsers]);
+        } catch (\Throwable $th) {
+            return response()->json(["status" => 0, "message" => "Something went wrong", "error" => $th->getMessage()]);
+        }
+    }
+
+    /* update user data */
+    public function updateUserData(Request $request)
+    {
+        $findUser = User::find($request->id);
+        if ($findUser) {
+            $findUser->first_name = $request->first_name;
+            $findUser->last_name = $request->last_name;
+            $findUser->email = $request->email;
+            $findUser->role = $request->role;
+            $findUser->phone = $request->phone;
+            $status = $findUser->save();
+            $getAllUsers = $this->getAllUsers();
+            if ($status)
+                return response()->json(["status" => 1, "message" => "User updated successfully", "users" => $getAllUsers]);
+            else
+                return response()->json(["status" => 0, "message" => "Something went wrong", "users" => $getAllUsers]);
+        } else {
+            return response()->json(["status" => 0, "message" => "User not found"]);
+        }
     }
 }

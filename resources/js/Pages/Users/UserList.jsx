@@ -10,6 +10,7 @@ function UserList({ auth }) {
     const [formType, setformType] = useState("");
     const [userList, setuserList] = useState([]);
     const [roles, setroles] = useState([]);
+    const [editUserData, seteditUserData] = useState(null);
     useEffect(() => {
         (async () => {
             const response = await axios.get(route("api.get-all-users"));
@@ -33,10 +34,24 @@ function UserList({ auth }) {
                 return <ManuallyAddUsersForm userList={setuserList} roles={roles} />;
             case 'dropzone':
                 return <DropZoneForm userList={setuserList} />;
+            case 'manualAdderEdit':
+                return <ManuallyAddUsersForm userList={setuserList} roles={roles} userData={retainKeys(editUserData)} />;
             default:
                 return null;
         }
     };
+    const retainKeys = (obj) => {
+        const keysToKeep = ['id', 'first_name', 'last_name', 'email', 'phone', 'role'];
+        let newObj = {};
+        Object.entries(obj).filter(([key, value]) => keysToKeep.includes(key)).forEach(([key, value]) => newObj[key] = value);
+        return newObj;
+    }
+
+    useEffect(() => {
+        if (formType !== 'manualAdderEdit') {
+            seteditUserData(null);
+        }
+    }, [formType]);
 
     return (
         <Authenticated user={auth}>
@@ -77,12 +92,16 @@ function UserList({ auth }) {
                                                     <td className='ellipsis'> {user.account_id}</td>
                                                     <td> {user.first_name} </td>
                                                     <td> {user.last_name} </td>
-                                                    <td> {user.email} </td>
-                                                    <td> {user.phone || `_ _`} </td>
+                                                    <td className='ellipsis'> {user.email} </td>
+                                                    <td className='ellipsis'> {user.phone || `_ _`} </td>
                                                     <td><span className="badge bg-success rounded-pill">Active</span></td>
-                                                    <td><span className="badge bg-danger rounded-pill">Team Lead</span></td>
+                                                    <td><span className={`badge ${user.role_relation !== null && user.role !== 0 ? 'bg-danger' : 'bg-success'} rounded-pill`}>{user.role_relation !== null && user.role !== 0 ? user.role_relation.role_name : 'Administrator'}</span></td>
                                                     <td className='text-center'>
-                                                        <button data-bs-toggle="tooltip" data-bs-placement="top" title="Edit User" className="btn btn-icon btn-primary btn-sm m-1"><i className='fa fa-edit'></i></button>
+                                                        {
+                                                            user.role_relation !== null && (
+                                                                <button data-bs-toggle="modal" data-bs-target="#exampleModal" data-bs-placement="top" title="Edit User" className="btn btn-icon btn-primary btn-sm m-1" onClick={(e) => { setformType("manualAdderEdit"), seteditUserData(user) }}><i className='fa fa-edit'></i></button>
+                                                            )
+                                                        }
                                                         <button data-bs-toggle="tooltip" data-bs-placement="top" title="Make Admin" className="btn btn-icon btn-primary btn-sm m-1"><i className='fa fa-user'></i></button>
                                                         <button data-bs-toggle="tooltip" data-bs-placement="top" title="Delete" className="btn btn-icon btn-primary btn-sm m-1"><i className='fa fa-trash'></i></button>
                                                         <button data-bs-toggle="tooltip" data-bs-placement="top" title="Show user information" className="btn btn-icon btn-primary btn-sm m-1"><i className='fa fa-info-circle'></i></button>
