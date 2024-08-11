@@ -6,7 +6,7 @@ function Task({ task }) {
             <div className="card-body">
                 <div className="d-flex justify-content-between align-items-center mb-2">
                     <h5 className='mb-0'>{task.task_name}</h5>
-                    <span class="badge bg-danger rounded-pill w-25">Activity</span>
+                    <span class="badge bg-danger rounded-pill" style={{ width: '70px' }}>Activity</span>
                 </div>
                 <p>{task.task_description}</p>
                 <div className="row">
