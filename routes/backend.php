@@ -1,6 +1,8 @@
 <?php
 
 use App\Http\Controllers\AuthenticationController;
+use App\Http\Controllers\Controller;
+use App\Http\Controllers\ProjectsController;
 use App\Http\Controllers\RolesController;
 use App\Http\Controllers\UserController;
 use Illuminate\Support\Facades\Route;
@@ -32,6 +34,11 @@ Route::prefix('api')->as('api.')->group(function () {
             Route::post("/manually-save-users", 'manuallySaveUsers')->name("manually-save-users");
             Route::patch("/update-user", 'updateUserData')->name("update-user");
             Route::post("/upload-user-csv", "uploadUserCsv")->name("upload-user-csv");
+        });
+
+        /* projects controller group */
+        Route::controller(ProjectsController::class)->group(function () {
+            Route::get("/get-all-projects", "getAllProject")->name('get-all-projects');
         });
     });
 });

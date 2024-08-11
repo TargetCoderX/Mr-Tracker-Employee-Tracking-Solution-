@@ -20,7 +20,7 @@ function Sidebar() {
                     </a>
                     <div className="collapse" id="ui-basic">
                         <ul className="nav flex-column sub-menu">
-                            <li className="nav-item"> <a className="nav-link" href="../../pages/ui-features/buttons.html">All Projects</a></li>
+                            <li className="nav-item"> <Link className="nav-link" href={route('projects')}>All Projects</Link></li>
                             <li className="nav-item"> <Link className="nav-link" href={route('kanban-board')}>Kanban Board</Link></li>
                         </ul>
                     </div>
