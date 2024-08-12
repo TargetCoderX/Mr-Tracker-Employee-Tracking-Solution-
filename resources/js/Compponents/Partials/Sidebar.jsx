@@ -12,7 +12,11 @@ function Sidebar() {
                     </a>
                 </li>
                 <li className="nav-item nav-category">Main Menu</li>
-                <li className="nav-item">
+                <li className="nav-item"> <Link className="nav-link" href={route('projects')}>
+                    <i className="menu-icon mdi mdi-briefcase"></i>
+                    <span className="menu-title">All Projects</span>
+                </Link></li>
+                {/* <li className="nav-item">
                     <a className="nav-link" data-bs-toggle="collapse" href="#ui-basic" aria-expanded="false" aria-controls="ui-basic">
                         <i className="menu-icon mdi mdi-floor-plan"></i>
                         <span className="menu-title">Projects</span>
@@ -24,7 +28,7 @@ function Sidebar() {
                             <li className="nav-item"> <Link className="nav-link" href={route('kanban-board')}>Kanban Board</Link></li>
                         </ul>
                     </div>
-                </li>
+                </li> */}
                 <li className="nav-item">
                     <Link className="nav-link" href={route('user-list')}>
                         <i className="menu-icon mdi mdi-account-group"></i>

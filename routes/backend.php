@@ -39,6 +39,7 @@ Route::prefix('api')->as('api.')->group(function () {
         /* projects controller group */
         Route::controller(ProjectsController::class)->group(function () {
             Route::get("/get-all-projects", "getAllProject")->name('get-all-projects');
+            Route::post('/save-project', 'saveProjects')->name('save-project');
         });
     });
 });

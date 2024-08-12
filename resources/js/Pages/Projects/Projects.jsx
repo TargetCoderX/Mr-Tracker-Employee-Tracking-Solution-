@@ -1,15 +1,20 @@
+import Modal from '@/Compponents/modals/Modal';
 import Authenticated from '@/Layouts/AuthenticatedLayout';
 import axios from 'axios';
 import React, { useEffect, useState } from 'react';
 import { toast } from 'react-toastify';
+import AddProjectForm from './Forms/AddProjectForm';
 
 function Projects({ auth }) {
     const [getallProjects, setgetallProjects] = useState([]);
+    const [users, setusers] = useState([]);
+
     const getAllroles = async () => {
         try {
             const response = await axios.get(route('api.get-all-projects'));
             if (response.data.status == 1) {
                 setgetallProjects(response.data.projects);
+                setusers(response.data.users);
             } else {
                 setgetallProjects([]);
                 toast.error(response.data.message);
@@ -21,6 +26,21 @@ function Projects({ auth }) {
     useEffect(() => {
         getAllroles();
     }, []);
+
+    const formSubmitCallback = async (data) => {
+        try {
+            const response = await axios.post(route('api.save-project'), data);
+            if (response.data.status == 1) {
+                setgetallProjects(response.data.projects.original.projects);
+                setusers(response.data.projects.original.users);
+                toast.success(response.data.message);
+            } else {
+                toast.error(response.data.message);
+            }
+        } catch (error) {
+            toast.error("Something went wrong");
+        }
+    }
     return (
         <Authenticated user={auth}>
             <div className="row">
@@ -51,11 +71,17 @@ function Projects({ auth }) {
                                     <tbody>
                                         {getallProjects && getallProjects.length > 0 ? (
                                             getallProjects.map((element, index) => (
-                                                <tr>
+                                                <tr key={index} className='text-center'>
                                                     <td>{index + 1}</td>
                                                     <td>{element.project_name}</td>
+                                                    <td>{element.user_details.first_name} {element.user_details.last_name}</td>
                                                     <td>{element.project_creation_date}</td>
                                                     <td>{element.project_deadline}</td>
+                                                    <td>
+                                                        <button className="btn btn-warning btn-sm w-25 me-1">Edit</button>
+                                                        <button className="btn btn-primary btn-sm w-25 me-1">View Tasks</button>
+                                                        <button className="btn btn-danger btn-sm w-25">Delete</button>
+                                                    </td>
                                                 </tr>
                                             ))
                                         ) : (
@@ -71,6 +97,7 @@ function Projects({ auth }) {
                     </div>
                 </div>
             </div>
+            <Modal form={<AddProjectForm submitAction={formSubmitCallback} users={users} />} title={"Add Project"} />
         </Authenticated>
     );
 }
