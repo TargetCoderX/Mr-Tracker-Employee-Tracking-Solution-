@@ -20,7 +20,7 @@ function AddGroupForm({ submitAction }) {
                 <textarea className='form-control' style={{ resize: 'none' }} value={newGroupForm.description} name='description' onChange={(e) => { handleChange(e) }} rows={10} placeholder='Group Description' ></textarea>
             </div>
             <div className="text-center">
-                <button type="button" onClick={(e) => { submitForm(e) }} class="btn btn-primary btn-sm">Save changes</button>
+                <button type="button" onClick={(e) => { submitForm(e) }} className="btn btn-primary btn-sm">Save changes</button>
             </div>
         </>
     );

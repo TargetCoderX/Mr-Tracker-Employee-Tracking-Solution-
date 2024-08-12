@@ -11,7 +11,13 @@ class Board extends Model
     protected $table = "boards";
     protected $fillable = [
         "account_id",
-        "sort_order",
         "board_name",
+        "project_id",
+        "board_description",
     ];
+
+    public function tasks()
+    {
+        return $this->hasMany(Task::class, 'board_id', 'id');
+    }
 }

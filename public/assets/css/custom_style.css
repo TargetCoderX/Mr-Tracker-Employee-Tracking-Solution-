@@ -315,3 +315,30 @@
     color: rgba(0, 0, 0, 0.5);
     border-color: rgba(0, 0, 0, 0.05);
 }
+
+/* For WebKit browsers */
+::-webkit-scrollbar {
+    width: 6px;
+    /* Width of the vertical scrollbar */
+    height: 6px;
+    /* Height of the horizontal scrollbar */
+}
+
+::-webkit-scrollbar-track {
+    background: #f1f1f1;
+    /* Track color */
+}
+
+::-webkit-scrollbar-thumb {
+    background: #888;
+    /* Scrollbar thumb color */
+    border-radius: 10px;
+    /* Rounded corners for the scrollbar thumb */
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: #555;
+    /* Darker color when hovered */
+}
+
+/* For Firefox */

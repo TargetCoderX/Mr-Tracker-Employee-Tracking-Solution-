@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use App\Models\Board;
 use App\Models\Projects;
+use App\Models\Task;
+use App\Models\TaskTypes;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -29,7 +31,7 @@ class ProjectsController extends Controller
             else
                 $getProjects->where('account_id', Auth::user()->account_id)->where("project_assigned_to_id", Auth::id());
 
-            $getAssignedProjects = $getProjects->with('userDetails')->get()->groupBy('project_id')->map(function ($project) {
+            $getAssignedProjects = $getProjects->with('userDetails')->orderby('id', 'desc')->get()->groupBy('project_id')->map(function ($project) {
                 return $project->first();
             })
                 ->values()
@@ -83,17 +85,113 @@ class ProjectsController extends Controller
     /* show kanban board */
     public function showKanbanBoard($project_id)
     {
-        $boards = $this->getBoards();
-
-        return Inertia::render("Projects/Kanban");
+        $boards = $this->getBoards($project_id);
+        $taskTypes = $this->getTaskTypes();
+        return Inertia::render("Projects/Kanban", [
+            "project_boards" => $boards,
+            "project_id" => $project_id,
+            "task_types" => $taskTypes,
+        ]);
     }
 
     /* get tasks */
     public function getTasks($project_id) {}
 
-    /* get boards */
-    public function getBoards()
+    /* save tasks */
+    public function saveTasks(Request $request)
     {
-        return Board::where("account_id", Auth::user()->account_id)->get();
+        try {
+            if (isset($request->task_type['__isNew__']) && $request->task_type['__isNew__'] == true) {
+                /* create new task type */
+                $checkIfExist = TaskTypes::where('task_type_name', strtolower($request->task_type['value']))
+                    ->where('account_id', Auth::user()->account_id)
+                    ->first();
+                $taskTypeId = "";
+                if (!$checkIfExist) {
+                    $taskTypeId = TaskTypes::create([
+                        "account_id" => Auth::user()->account_id,
+                        "task_type_name" => $request->task_type['value'],
+                    ])->id;
+                } else {
+                    $taskTypeId = $checkIfExist->id;
+                }
+            } else {
+                $taskTypeId = $request->task_type['value'];
+            }
+
+            Task::create([
+                "task_name" => $request->task_name,
+                "task_description" => $request->task_description,
+                "account_id" => Auth::user()->account_id,
+                "created_by_user" => Auth::id(),
+                "assigned_to_user" => "",
+                "dependent_users" => "",
+                "start_time_stamp" => $request->task_start_date,
+                "end_time_stamp" => $request->task_end_date,
+                "expected_total_time" => $request->total_day,
+                "project_id" => $request->project_id,
+                "board_id" => $request->board_id,
+                "task_type" => $taskTypeId,
+            ]);
+            $boards = $this->getBoards($request->project_id);
+            $taskTypes = $this->getTaskTypes();
+            return response()->json([
+                "status" => 1,
+                "message" => "Task Created",
+                "boards" => $boards,
+                "task_types" => $taskTypes,
+            ]);
+        } catch (\Throwable $th) {
+            $boards = $this->getBoards($request->project_id);
+            $taskTypes = $this->getTaskTypes();
+            return response()->json([
+                "status" => 0,
+                "message" => "Something went wrong",
+                "boards" => $boards,
+                "task_types" => $taskTypes,
+                "error" => $th->getMessage(),
+            ]);
+        }
+    }
+
+    /* get boards */
+    public function getBoards($project_id)
+    {
+        return Board::where("account_id", Auth::user()->account_id)
+            ->where('project_id', $project_id)
+            ->orderBy('id', 'asc')
+            ->with(['tasks.task_type'])
+            ->get();
+    }
+
+    /* save boards */
+    public function saveBoards(Request $request)
+    {
+        try {
+            Board::create([
+                "board_name" => $request->board_name,
+                "board_description" => $request->description,
+                "project_id" => $request->project_id,
+                "account_id" => Auth::user()->account_id,
+            ]);
+            $getAllBords = $this->getBoards($request->project_id);
+            return response()->json([
+                "status" => 1,
+                "message" => "Board Created successfully",
+                "boards" => $getAllBords,
+            ]);
+        } catch (\Throwable $th) {
+            return response()->json([
+                "status" => 0,
+                "message" => "Soemthing went wrong",
+                "error" => $th->getMessage(),
+            ]);
+        }
+    }
+
+    /* get task types */
+    public function getTaskTypes()
+    {
+        return TaskTypes::select('id as value', 'task_type_name as label')->where('account_id', Auth::user()->account_id)->get();
     }
 }

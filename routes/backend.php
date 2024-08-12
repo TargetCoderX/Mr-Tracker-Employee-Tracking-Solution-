@@ -40,6 +40,8 @@ Route::prefix('api')->as('api.')->group(function () {
         Route::controller(ProjectsController::class)->group(function () {
             Route::get("/get-all-projects", "getAllProject")->name('get-all-projects');
             Route::post('/save-project', 'saveProjects')->name('save-project');
+            Route::post('/save-board', 'saveBoards')->name('save-board');
+            Route::post('/save-task', 'saveTasks')->name('save-task');
         });
     });
 });
