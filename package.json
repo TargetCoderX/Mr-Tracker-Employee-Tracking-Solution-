@@ -21,6 +21,7 @@
     },
     "dependencies": {
         "he": "^1.2.0",
+        "react-select": "^5.8.0",
         "react-toastify": "^10.0.5",
         "sweetalert": "^2.1.2"
     }

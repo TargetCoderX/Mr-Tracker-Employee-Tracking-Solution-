@@ -1,4 +1,6 @@
 import React, { useEffect, useState } from 'react';
+// import { MultiSelect } from "react-multi-select-component";
+import Select from 'react-select';
 
 function AddProjectForm({ submitAction, users }) {
     const [formData, setformData] = useState({
@@ -8,6 +10,11 @@ function AddProjectForm({ submitAction, users }) {
         end_date: "",
     });
 
+    const [selectBoxSelected, setselectBoxSelected] = useState([]);
+
+    useEffect(() => {
+        setformData({ ...formData, ['assignee']: selectBoxSelected });
+    }, [selectBoxSelected]);
 
     const handleChange = (e) => {
         const { name, value } = e.target;
@@ -17,6 +24,7 @@ function AddProjectForm({ submitAction, users }) {
         e.preventDefault();
         submitAction(formData);
         document.getElementById("modalClose").click();
+        setselectBoxSelected([]);
         setformData({
             project_name: "",
             assignee: "",
@@ -24,9 +32,6 @@ function AddProjectForm({ submitAction, users }) {
             end_date: "",
         });
     }
-    useEffect(() => {
-        console.log("modal called");
-    }, []);
 
     return (
         <>
@@ -35,14 +40,21 @@ function AddProjectForm({ submitAction, users }) {
                     <input type="text" required name='project_name' onChange={(e) => { handleChange(e) }} placeholder='Project Name' value={formData.project_name} className="form-control" />
                 </div>
                 <div className="form-group">
-                    <select name="assignee" required id="assignee" onChange={(e) => { handleChange(e) }} className="form-control" value={formData.assignee}>
+                    <Select
+                        options={users || []}
+                        defaultValue={selectBoxSelected}
+                        onChange={setselectBoxSelected}
+                        labelledBy="Select"
+                        isMulti
+                    />
+                    {/*   <select multiple name="assignee" required id="assignee" onChange={(e) => { handleChange(e) }} className="form-control" value={formData.assignee}>
                         <option value="" style={{ display: 'none' }}>Assigned To</option>
                         {
                             users && users.map((user) => (
                                 <option key={user.id} value={user.id}>{user.first_name} {user.last_name}</option>
                             ))
                         }
-                    </select>
+                    </select> */}
                 </div>
                 <div className="form-group">
                     <input type="date" required name='start_date' onChange={(e) => { handleChange(e) }} placeholder='Start Date' value={formData.start_date} className="form-control" />

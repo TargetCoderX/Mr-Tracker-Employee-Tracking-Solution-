@@ -5,6 +5,7 @@ use App\Http\Controllers\ProjectsController;
 use App\Http\Controllers\RolesController;
 use App\Http\Controllers\UserController;
 use App\Http\Middleware\AccountDetailsForceFillup;
+use App\Http\Middleware\kanbanBoardProtector;
 use App\Models\AccountInformation;
 use Illuminate\Auth\Middleware\Authenticate;
 use Illuminate\Foundation\Application;
@@ -46,15 +47,13 @@ Route::middleware('auth')->group(function () {
         /* projects controller group */
         Route::controller(ProjectsController::class)->group(function () {
             Route::get('/projects', 'gotoProjectPage')->name('projects');
+            Route::get('/kanban-board/{project_id}', 'showKanbanBoard')->middleware(kanbanBoardProtector::class)->name('kanban-board');
         });
 
         /* testing routes */
         Route::get("/dashboard", function () {
             return Inertia::render("Dashboard");
         })->name('dashboard');
-        Route::get("/kanban-board", function () {
-            return Inertia::render("Projects/Kanban");
-        })->name('kanban-board');
     });
 });
 
