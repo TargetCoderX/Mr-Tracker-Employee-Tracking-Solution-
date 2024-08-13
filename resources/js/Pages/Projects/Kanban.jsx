@@ -7,14 +7,16 @@ import AddTaskForm from './Forms/AddTaskForm';
 import { usePage } from '@inertiajs/react';
 import axios from 'axios';
 import { toast } from 'react-toastify';
+import swal from 'sweetalert';
 
 function Kanban({ auth }) {
-    const { project_boards, project_id, task_types } = usePage().props;
+    const { project_boards, project_id, task_types, assigned_users } = usePage().props;
     const [boards, setboards] = useState([]);
     const [accountTaskTypes, setaccountTaskTypes] = useState([]);
     const [formType, setformType] = useState("");
     const [formTitle, setformTitle] = useState("");
     const [selectedBoard, setselectedBoard] = useState("");
+    const [assignedUsers, setassignedUsers] = useState("");
 
     const addNewGroup = async (newBoards) => {
         try {
@@ -37,7 +39,13 @@ function Kanban({ auth }) {
                 return <AddGroupForm submitAction={addNewGroup} />
                 break;
             case 'addTaskForm':
-                return <AddTaskForm submitAction={taskSubmitAction} board_id={selectedBoard} task_types={accountTaskTypes} project_id={project_id} />
+                return <AddTaskForm
+                    users={assignedUsers}
+                    submitAction={taskSubmitAction}
+                    board_id={selectedBoard}
+                    task_types={accountTaskTypes}
+                    project_id={project_id}
+                />
                 break;
 
             default:
@@ -66,11 +74,13 @@ function Kanban({ auth }) {
                 toast.success(response.data.message);
                 setboards(response.data.boards);
                 setaccountTaskTypes(response.data.task_types);
+                setassignedUsers(response.data.assigned_users)
             }
             else {
                 toast.error(response.data.message);
                 setboards(response.data.boards);
                 setaccountTaskTypes(response.data.task_types);
+                setassignedUsers(response.data.assigned_users)
             }
         } catch (error) {
             toast.error("Something went wrong");
@@ -79,7 +89,8 @@ function Kanban({ auth }) {
     useEffect(() => {
         setboards(project_boards);
         setaccountTaskTypes(task_types);
-    }, [project_boards, task_types]);
+        setassignedUsers(assigned_users);
+    }, [project_boards, task_types, assigned_users]);
 
     /* kanban coading */
     const onDragStart = (e, taskId, sourceColumnId) => {
@@ -112,15 +123,67 @@ function Kanban({ auth }) {
     const updateTaskBoard = async (task_id, board_id) => {
         try {
             const response = await axios.put(route('api.update-task-board'), { task_id, board_id });
-            console.log(response);
         } catch (error) {
-
+            toast.error("Something went wrong");
         }
     }
 
     const onDragOver = (e) => {
         e.preventDefault();
     };
+
+    const deleteBoard = (e, board_id) => {
+        swal({
+            title: "Are you sure?",
+            text: "If you delete this board all the task in this board ill be deleted, You cannot recover those tasks any more, Take caution before proceeding",
+            icon: "warning",
+            buttons: true,
+            dangerMode: true,
+        })
+            .then(async (willDelete) => {
+                if (willDelete) {
+                    try {
+                        const response = await axios.put(route('api.delete-board'), { board_id });
+                        if (response.data.status == 1) {
+                            setboards(response.data.project_boards);
+                            setaccountTaskTypes(response.data.task_types);
+                            setassignedUsers(response.data.assigned_users);
+                        }
+                    } catch (error) {
+                        toast.error('something went wrong');
+                    }
+
+                }
+            });
+    }
+
+    const deleteTask = async (task_id) => {
+        try {
+            swal({
+                title: "Are you sure?",
+                text: "Once deleted, tou cannot recover this task, Take caution before deleting",
+                icon: "warning",
+                buttons: true,
+                dangerMode: true,
+            })
+                .then(async (willDelete) => {
+                    if (willDelete) {
+                        const response = await axios.post(route('api.delete-task'), { task_id, project_id })
+                        if (response.data.status == 1) {
+                            toast.success(response.data.message);
+                            setboards(response.data.project_boards);
+                            setaccountTaskTypes(response.data.task_types);
+                            setassignedUsers(response.data.assigned_users);
+                        } else {
+                            toast.error(response.data.message);
+                        }
+                    }
+                });
+
+        } catch (error) {
+            toast.error("Something went wrong");
+        }
+    }
     return (
         <Authenticated user={auth}>
             <div className="row mb-2">
@@ -144,7 +207,7 @@ function Kanban({ auth }) {
                                                 <a onClick={(e) => (setformType("addTaskForm"), setselectedBoard(element.id))} data-bs-toggle="modal" data-bs-target="#exampleModal" href="#" className='m-1' style={{ textDecoration: "none", "color": "black" }}><i className='fa fa-plus'></i></a>
                                             )}
                                             {auth && auth.user.role === 0 && (
-                                                <a href="#" className='m-1' style={{ textDecoration: "none", "color": "black" }}><i className='fa fa-trash'></i></a>
+                                                <a href="#" onClick={(e) => { deleteBoard(e, element.id) }} className='m-1' style={{ textDecoration: "none", "color": "black" }}><i className='fa fa-trash'></i></a>
                                             )}
                                         </div>
                                     </div>
@@ -153,7 +216,13 @@ function Kanban({ auth }) {
                                         {
                                             element.tasks && element.tasks.map((task, index) => {
 
-                                                return <Task task={task} board_id={element.id} drag_start={onDragStart} key={index} />
+                                                return <Task
+                                                    task={task}
+                                                    board_id={element.id}
+                                                    drag_start={onDragStart}
+                                                    key={index}
+                                                    delete_task={deleteTask}
+                                                />
                                             })
                                         }
                                     </div>

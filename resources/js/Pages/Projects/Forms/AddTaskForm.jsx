@@ -1,8 +1,44 @@
 import React, { useEffect, useState } from 'react';
 import CreatableSelect from 'react-select/creatable';
 import swal from 'sweetalert';
+import Select from 'react-select';
 
-function AddTaskForm({ submitAction, project_id, task_types, board_id }) {
+function AddTaskForm({ submitAction, project_id, task_types, board_id, users }) {
+    const [refinedUsers, setrefinedUsers] = useState([]);
+    const [dependentRefinedUsers, setdependentRefinedUsers] = useState([]);
+    const [assignedUser, setassignedUser] = useState([]);
+    const [dependentUsers, setdependentUsers] = useState([]);
+    useEffect(() => {
+        (() => {
+            const updatedUsers = users.map((user) => {
+                return {
+                    "label": `${user.first_name} ${user.last_name}`,
+                    "value": user.id,
+                }
+            })
+            setrefinedUsers(updatedUsers);
+        })()
+    }, [users])
+
+    useEffect(() => {
+        (() => {
+            const dependentUserList = users
+                .filter(user => user.id != assignedUser.value)
+                .map(user => ({
+                    label: `${user.first_name} ${user.last_name}`,
+                    value: user.id,
+                }));
+            setdependentRefinedUsers(dependentUserList);
+            settaskForm({ ...taskForm, ['assigned_user']: assignedUser });
+        })()
+    }, [assignedUser]);
+
+    useEffect(() => {
+        (() => {
+            settaskForm({ ...taskForm, ['dependent_users']: dependentUsers });
+        })()
+    }, [dependentUsers]);
+
     const [selectBoxSelected, setselectBoxSelected] = useState([]);
     const [taskForm, settaskForm] = useState({
         "project_id": project_id,
@@ -13,6 +49,8 @@ function AddTaskForm({ submitAction, project_id, task_types, board_id }) {
         "task_start_date": "",
         "task_end_date": "",
         "total_day": 0,
+        "assigned_user": "",
+        "dependent_users": ""
     });
 
     const handleChange = (e) => {
@@ -40,6 +78,9 @@ function AddTaskForm({ submitAction, project_id, task_types, board_id }) {
     const handleSubmit = (e) => {
         e.preventDefault();
         submitAction(taskForm);
+        setassignedUser([]);
+        setdependentRefinedUsers([]);
+        setselectBoxSelected([]);
         document.getElementById("modalClose").click();
         settaskForm({
             "project_id": project_id,
@@ -50,6 +91,8 @@ function AddTaskForm({ submitAction, project_id, task_types, board_id }) {
             "task_start_date": "",
             "task_end_date": "",
             "total_day": 0,
+            "assigned_user": "",
+            "dependent_users": ""
         })
     }
 
@@ -80,15 +123,38 @@ function AddTaskForm({ submitAction, project_id, task_types, board_id }) {
                         options={task_types}
                         defaultValue={selectBoxSelected}
                         onChange={setselectBoxSelected}
-                        labelledBy="Select"
+                        placeholder="Select task type"
                         required
                     />
                 </div>
                 <div className="form-group">
+                    <Select
+                        isClearable
+                        options={refinedUsers}
+                        defaultValue={assignedUser}
+                        onChange={setassignedUser}
+                        placeholder="Select Assignee"
+                        required
+                    />
+                </div>
+                <div className="form-group">
+                    <Select
+                        isClearable
+                        options={dependentRefinedUsers}
+                        defaultValue={setdependentUsers}
+                        onChange={setdependentUsers}
+                        placeholder="Select Dependent Assignees"
+                        required
+                        isMulti
+                    />
+                </div>
+                <div className="form-group">
                     <input required type="date" value={taskForm.task_start_date} name='task_start_date' onChange={(e) => { handleChange(e) }} placeholder='Start Date' className="form-control" />
+                    <label for="dateInput" class="date-placeholder">Select start date</label>
                 </div>
                 <div className="form-group">
                     <input required type="date" value={taskForm.task_end_date} name='task_end_date' onChange={(e) => { handleChange(e) }} placeholder='End Date' className="form-control" />
+                    <label for="dateInput" class="date-placeholder">Select end date</label>
                 </div>
                 <div className="form-group">
                     <input required type="text" value={taskForm.total_day} name='total_day' onChange={(e) => { handleChange(e) }} readOnly placeholder='Expected Total Days' className="form-control" />

@@ -41,7 +41,9 @@ Route::prefix('api')->as('api.')->group(function () {
             Route::get("/get-all-projects", "getAllProject")->name('get-all-projects');
             Route::post('/save-project', 'saveProjects')->name('save-project');
             Route::post('/save-board', 'saveBoards')->name('save-board');
+            Route::put('/delete-board', 'deleteBoard')->name('delete-board');
             Route::post('/save-task', 'saveTasks')->name('save-task');
+            Route::post('/delete-task', 'deleteTasks')->name('delete-task');
             Route::put('/update-task-board', 'updateTaskBoard')->name('update-task-board');
         });
     });
