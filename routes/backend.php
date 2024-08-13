@@ -42,6 +42,7 @@ Route::prefix('api')->as('api.')->group(function () {
             Route::post('/save-project', 'saveProjects')->name('save-project');
             Route::post('/save-board', 'saveBoards')->name('save-board');
             Route::post('/save-task', 'saveTasks')->name('save-task');
+            Route::put('/update-task-board', 'updateTaskBoard')->name('update-task-board');
         });
     });
 });

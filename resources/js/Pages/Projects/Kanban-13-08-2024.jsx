@@ -7,6 +7,7 @@ import AddTaskForm from './Forms/AddTaskForm';
 import { usePage } from '@inertiajs/react';
 import axios from 'axios';
 import { toast } from 'react-toastify';
+import { DragDropContext, Droppable, Draggable } from 'react-beautiful-dnd';
 
 function Kanban({ auth }) {
     const { project_boards, project_id, task_types } = usePage().props;
@@ -15,6 +16,7 @@ function Kanban({ auth }) {
     const [formType, setformType] = useState("");
     const [formTitle, setformTitle] = useState("");
     const [selectedBoard, setselectedBoard] = useState("");
+
 
     const addNewGroup = async (newBoards) => {
         try {
@@ -80,47 +82,6 @@ function Kanban({ auth }) {
         setboards(project_boards);
         setaccountTaskTypes(task_types);
     }, [project_boards, task_types]);
-
-    /* kanban coading */
-    const onDragStart = (e, taskId, sourceColumnId) => {
-        e.dataTransfer.setData('taskId', taskId);
-        e.dataTransfer.setData('sourceColumnId', sourceColumnId);
-    };
-
-    const onDrop = (e, targetColumnId) => {
-        const taskId = e.dataTransfer.getData('taskId');
-        const sourceColumnId = e.dataTransfer.getData('sourceColumnId');
-        if (sourceColumnId == targetColumnId) { return; }
-
-        const sourceColumn = boards.find(column => column.id == sourceColumnId);
-        const targetColumn = boards.find(column => column.id == targetColumnId);
-        const task = sourceColumn.tasks.find(task => task.id == taskId);
-        const updatedSourceTasks = sourceColumn.tasks.filter(task => task.id != taskId);
-        const updatedTargetTasks = [...targetColumn.tasks, task];
-        const updatedColumns = boards.map(column => {
-            if (column.id == sourceColumnId) {
-                return { ...column, tasks: updatedSourceTasks };
-            } else if (column.id == targetColumnId) {
-                return { ...column, tasks: updatedTargetTasks };
-            }
-            return column;
-        });
-        setboards(updatedColumns);
-        updateTaskBoard(taskId, targetColumnId)
-    };
-
-    const updateTaskBoard = async (task_id, board_id) => {
-        try {
-            const response = await axios.put(route('api.update-task-board'), { task_id, board_id });
-            console.log(response);
-        } catch (error) {
-
-        }
-    }
-
-    const onDragOver = (e) => {
-        e.preventDefault();
-    };
     return (
         <Authenticated user={auth}>
             <div className="row mb-2">
@@ -133,8 +94,7 @@ function Kanban({ auth }) {
             <div className="d-flex overflow-x-auto">
                 {
                     boards && boards.map((element, index) => {
-                        return <div className="col-4 m-1" key={index} onDragOver={onDragOver}
-                            onDrop={(e) => onDrop(e, element.id)}>
+                        return <div className="col-4 m-1" key={index}>
                             <div className="card" >
                                 <div className="card-body">
                                     <div className="d-flex justify-content-between align-items-center mb-2">
@@ -153,7 +113,7 @@ function Kanban({ auth }) {
                                         {
                                             element.tasks && element.tasks.map((task, index) => {
 
-                                                return <Task task={task} board_id={element.id} drag_start={onDragStart} key={index} />
+                                                return <Task task={task} key={index} />
                                             })
                                         }
                                     </div>

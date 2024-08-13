@@ -87,10 +87,12 @@ class ProjectsController extends Controller
     {
         $boards = $this->getBoards($project_id);
         $taskTypes = $this->getTaskTypes();
+        $getAssignedUsers = $this->getProjectUsers($project_id);
         return Inertia::render("Projects/Kanban", [
             "project_boards" => $boards,
             "project_id" => $project_id,
             "task_types" => $taskTypes,
+            "assigned_users" => $getAssignedUsers,
         ]);
     }
 
@@ -193,5 +195,42 @@ class ProjectsController extends Controller
     public function getTaskTypes()
     {
         return TaskTypes::select('id as value', 'task_type_name as label')->where('account_id', Auth::user()->account_id)->get();
+    }
+
+    /* get all project users */
+    public function getProjectUsers($project_id)
+    {
+        try {
+            return Projects::where("project_id", $project_id)
+                ->with("userDetails")
+                ->get()
+                ->pluck('userDetails')
+                ->flatten()
+                ->unique('id');;
+        } catch (\Throwable $th) {
+            return [];
+        }
+    }
+
+    /* update task board */
+    public function updateTaskBoard(Request $request)
+    {
+        try {
+            $findTask = Task::find($request->task_id);
+            if ($findTask) {
+                $findTask->board_id = $request->board_id;
+                $findTask->save();
+            }
+            return response()->json([
+                "status"=>1,
+                "message"=>"Task Updated Successfully",
+            ]);
+        } catch (\Throwable $th) {
+            return response()->json([
+                "status"=>0,
+                "message"=>"Soemthing went wrong",
+                "error"=>$th->getMessage(),
+            ]);
+        }
     }
 }
