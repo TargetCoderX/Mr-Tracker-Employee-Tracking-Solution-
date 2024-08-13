@@ -10,10 +10,10 @@ function NavBar({ user }) {
                 </div>
                 <div>
                     <a className="navbar-brand brand-logo" href="index.html">
-                        <img src="assets/images/logo.svg" alt="logo" />
+                        <img src="/assets/images/logo.svg" alt="logo" />
                     </a>
                     <a className="navbar-brand brand-logo-mini" href="index.html">
-                        <img src="assets/images/logo-mini.svg" alt="logo" />
+                        <img src="/assets/images/logo-mini.svg" alt="logo" />
                     </a>
                 </div>
             </div>
@@ -123,7 +123,7 @@ function NavBar({ user }) {
                             <div className="dropdown-divider"></div>
                             <a className="dropdown-item preview-item">
                                 <div className="preview-thumbnail">
-                                    <img src="assets/images/faces/face10.jpg" alt="image" className="img-sm profile-pic" />
+                                    <img src="/assets/images/faces/face10.jpg" alt="image" className="img-sm profile-pic" />
                                 </div>
                                 <div className="preview-item-content flex-grow py-2">
                                     <p className="preview-subject ellipsis fw-medium text-dark">Marian Garner </p>
@@ -132,7 +132,7 @@ function NavBar({ user }) {
                             </a>
                             <a className="dropdown-item preview-item">
                                 <div className="preview-thumbnail">
-                                    <img src="assets/images/faces/face12.jpg" alt="image" className="img-sm profile-pic" />
+                                    <img src="/assets/images/faces/face12.jpg" alt="image" className="img-sm profile-pic" />
                                 </div>
                                 <div className="preview-item-content flex-grow py-2">
                                     <p className="preview-subject ellipsis fw-medium text-dark">David Grey </p>
@@ -141,7 +141,7 @@ function NavBar({ user }) {
                             </a>
                             <a className="dropdown-item preview-item">
                                 <div className="preview-thumbnail">
-                                    <img src="assets/images/faces/face1.jpg" alt="image" className="img-sm profile-pic" />
+                                    <img src="/assets/images/faces/face1.jpg" alt="image" className="img-sm profile-pic" />
                                 </div>
                                 <div className="preview-item-content flex-grow py-2">
                                     <p className="preview-subject ellipsis fw-medium text-dark">Travis Jenkins </p>
@@ -152,10 +152,10 @@ function NavBar({ user }) {
                     </li>
                     <li className="nav-item dropdown d-none d-lg-block user-dropdown">
                         <a className="nav-link" id="UserDropdown" href="#" data-bs-toggle="dropdown" aria-expanded="false">
-                            <img className="img-xs rounded-circle" src="assets/images/faces/face8.jpg" alt="Profile image" /> </a>
+                            <img className="img-xs rounded-circle" src="/assets/images/faces/face8.jpg" alt="Profile image" /> </a>
                         <div className="dropdown-menu dropdown-menu-right navbar-dropdown" aria-labelledby="UserDropdown">
                             <div className="dropdown-className= text-center">
-                                <img className="img-md rounded-circle" src="assets/images/faces/face8.jpg" alt="Profile image" />
+                                <img className="img-md rounded-circle" src="/assets/images/faces/face8.jpg" alt="Profile image" />
                                 <p className="mb-1 mt-3 fw-semibold">{user.name}</p>
                                 <p className="fw-light text-muted mb-0">{user.email}</p>
                             </div>
