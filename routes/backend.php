@@ -45,6 +45,8 @@ Route::prefix('api')->as('api.')->group(function () {
             Route::post('/save-task', 'saveTasks')->name('save-task');
             Route::post('/delete-task', 'deleteTasks')->name('delete-task');
             Route::put('/update-task-board', 'updateTaskBoard')->name('update-task-board');
+            Route::post("add-users-project", 'addUsersProject')->name('add-users-project');
+            Route::post("remove-users-project", 'removeUsersProject')->name('remove-users-project');
         });
     });
 });

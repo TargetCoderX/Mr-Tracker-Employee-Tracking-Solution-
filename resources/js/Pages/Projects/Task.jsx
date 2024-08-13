@@ -10,14 +10,14 @@ function Task({ task, drag_start, board_id, delete_task }) {
                         <span className="badge bg-danger rounded-pill" style={{ width: '100px' }}>
                             {task.task_type.task_type_name}
                         </span>
-                        <div class="dropdown">
+                        <div className="dropdown">
                             <span className="ellipsis-icon ms-2 dropdown-toggle" data-bs-toggle="dropdown">
                                 <i className="fa fa-ellipsis-v"></i>
                             </span>
                             {/* dropdown */}
-                            <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton1">
-                                <li><a class="dropdown-item" href="#" >Edit Task</a></li>
-                                <li><a class="dropdown-item" href="#" onClick={(e) => { e.preventDefault(), delete_task(task.id) }}>Delete Task</a></li>
+                            <ul className="dropdown-menu" aria-labelledby="dropdownMenuButton1">
+                                <li><a className="dropdown-item" href="#" >Edit Task</a></li>
+                                <li><a className="dropdown-item" href="#" onClick={(e) => { e.preventDefault(), delete_task(task.id) }}>Delete Task</a></li>
                             </ul>
                         </div>
                     </div>

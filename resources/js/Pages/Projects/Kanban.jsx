@@ -8,15 +8,17 @@ import { usePage } from '@inertiajs/react';
 import axios from 'axios';
 import { toast } from 'react-toastify';
 import swal from 'sweetalert';
+import ProjectUsersList from './Forms/ProjectUsersList';
 
 function Kanban({ auth }) {
-    const { project_boards, project_id, task_types, assigned_users } = usePage().props;
+    const { project_boards, project_id, task_types, assigned_users, all_users } = usePage().props;
     const [boards, setboards] = useState([]);
     const [accountTaskTypes, setaccountTaskTypes] = useState([]);
     const [formType, setformType] = useState("");
     const [formTitle, setformTitle] = useState("");
     const [selectedBoard, setselectedBoard] = useState("");
     const [assignedUsers, setassignedUsers] = useState("");
+    const [allUsers, setallUsers] = useState([]);
 
     const addNewGroup = async (newBoards) => {
         try {
@@ -47,7 +49,8 @@ function Kanban({ auth }) {
                     project_id={project_id}
                 />
                 break;
-
+            case 'showUserList':
+                return <ProjectUsersList action_handler={userActionHandler} users={assignedUsers} all_users={all_users} />
             default:
                 break;
         }
@@ -59,6 +62,9 @@ function Kanban({ auth }) {
                 break;
             case 'addTaskForm':
                 setformTitle("Add New Task");
+                break;
+            case 'showUserList':
+                setformTitle("User List");
                 break;
             default:
                 setformTitle("");
@@ -75,12 +81,14 @@ function Kanban({ auth }) {
                 setboards(response.data.boards);
                 setaccountTaskTypes(response.data.task_types);
                 setassignedUsers(response.data.assigned_users)
+                setallUsers(response.data.allUsers);
             }
             else {
                 toast.error(response.data.message);
                 setboards(response.data.boards);
                 setaccountTaskTypes(response.data.task_types);
                 setassignedUsers(response.data.assigned_users)
+                setallUsers(response.data.allUsers);
             }
         } catch (error) {
             toast.error("Something went wrong");
@@ -90,6 +98,7 @@ function Kanban({ auth }) {
         setboards(project_boards);
         setaccountTaskTypes(task_types);
         setassignedUsers(assigned_users);
+        setallUsers(all_users);
     }, [project_boards, task_types, assigned_users]);
 
     /* kanban coading */
@@ -148,6 +157,7 @@ function Kanban({ auth }) {
                             setboards(response.data.project_boards);
                             setaccountTaskTypes(response.data.task_types);
                             setassignedUsers(response.data.assigned_users);
+                            setallUsers(response.data.all_users);
                         }
                     } catch (error) {
                         toast.error('something went wrong');
@@ -174,12 +184,31 @@ function Kanban({ auth }) {
                             setboards(response.data.project_boards);
                             setaccountTaskTypes(response.data.task_types);
                             setassignedUsers(response.data.assigned_users);
+                            setallUsers(response.data.all_users);
                         } else {
                             toast.error(response.data.message);
                         }
                     }
                 });
+        } catch (error) {
+            toast.error("Something went wrong");
+        }
+    }
 
+    /* user action handler of project */
+    const userActionHandler = async (user_id, action) => {
+        try {
+            let response = "";
+            if (action === 'add')
+                response = await axios.post(route('api.add-users-project'), { project_id, user_id });
+            if (action === 'remove')
+                response = await axios.post(route('api.remove-users-project'), { project_id, user_id });
+            if (response.data.status == 1)
+                toast.success(response.data.message);
+            else
+                toast.error(response.data.message);
+            setassignedUsers(response.data.assigned_users);
+            setallUsers(response.data.all_users);
         } catch (error) {
             toast.error("Something went wrong");
         }
@@ -188,7 +217,10 @@ function Kanban({ auth }) {
         <Authenticated user={auth}>
             <div className="row mb-2">
                 <div className="col-md-12 text-end">
-                    <button className="btn btn-primary btn-sm" onClick={(e) => setformType("addGroupForm")} data-bs-toggle="modal" data-bs-target="#exampleModal">
+                    <button className="btn btn-primary btn-sm me-2" style={{ width: "170px" }} onClick={(e) => setformType("showUserList")} data-bs-toggle="modal" data-bs-target="#exampleModal">
+                        <i className="fa fa-users me-2"></i> User List
+                    </button>
+                    <button className="btn btn-primary btn-sm" style={{ width: "170px" }} onClick={(e) => setformType("addGroupForm")} data-bs-toggle="modal" data-bs-target="#exampleModal">
                         <i className="fa fa-plus me-2"></i> Add New Group
                     </button>
                 </div>

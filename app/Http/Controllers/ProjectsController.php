@@ -88,11 +88,13 @@ class ProjectsController extends Controller
         $boards = $this->getBoards($project_id);
         $taskTypes = $this->getTaskTypes();
         $getAssignedUsers = $this->getProjectUsers($project_id);
+        $allUsers = $this->getAllUsers();
         return Inertia::render("Projects/Kanban", [
             "project_boards" => $boards,
             "project_id" => $project_id,
             "task_types" => $taskTypes,
             "assigned_users" => $getAssignedUsers,
+            "all_users" => $allUsers,
         ]);
     }
 
@@ -138,27 +140,27 @@ class ProjectsController extends Controller
             $boards = $this->getBoards($request->project_id);
             $taskTypes = $this->getTaskTypes();
             $getAssignedUsers = $this->getProjectUsers($request->project_id);
-
+            $allUsers = $this->getAllUsers();
             return response()->json([
                 "status" => 1,
                 "message" => "Task Created",
                 "boards" => $boards,
                 "task_types" => $taskTypes,
                 "assigned_users" => $getAssignedUsers,
-
+                "all_users" => $allUsers,
             ]);
         } catch (\Throwable $th) {
             $boards = $this->getBoards($request->project_id);
             $taskTypes = $this->getTaskTypes();
             $getAssignedUsers = $this->getProjectUsers($request->project_id);
-
+            $allUsers = $this->getAllUsers();
             return response()->json([
                 "status" => 0,
                 "message" => "Something went wrong",
                 "boards" => $boards,
                 "task_types" => $taskTypes,
                 "assigned_users" => $getAssignedUsers,
-
+                "all_users" => $allUsers,
                 "error" => $th->getMessage(),
             ]);
         }
@@ -210,11 +212,13 @@ class ProjectsController extends Controller
     {
         try {
             return Projects::where("project_id", $project_id)
-                ->with("userDetails")
+                ->with(['userDetails' => function ($query) {
+                    $query->where('is_active', 1); // or 'is_active', 1 if it's a boolean
+                }, 'userDetails.roleRelation'])
                 ->get()
                 ->pluck('userDetails')
                 ->flatten()
-                ->unique('id');;
+                ->unique('id');
         } catch (\Throwable $th) {
             return [];
         }
@@ -260,12 +264,14 @@ class ProjectsController extends Controller
             $boards = $this->getBoards($project_id);
             $taskTypes = $this->getTaskTypes();
             $getAssignedUsers = $this->getProjectUsers($project_id);
+            $allUsers = $this->getAllUsers();
             return response()->json([
                 "status" => 1,
                 "messgage" => "Board Deleted Successfully",
                 "project_boards" => $boards,
                 "task_types" => $taskTypes,
                 "assigned_users" => $getAssignedUsers,
+                "all_users" => $allUsers,
             ]);
         } catch (\Throwable $th) {
             return response()->json([
@@ -274,6 +280,12 @@ class ProjectsController extends Controller
                 "error" => $th->getMessage(),
             ]);
         }
+    }
+
+    /* get all users */
+    public function getAllUsers()
+    {
+        return User::where('account_id', Auth::user()->account_id)->with('roleRelation')->get();
     }
 
     /* delete task */
@@ -285,17 +297,20 @@ class ProjectsController extends Controller
             $boards = $this->getBoards($request->project_id);
             $taskTypes = $this->getTaskTypes();
             $getAssignedUsers = $this->getProjectUsers($request->project_id);
+            $allUsers = $this->getAllUsers();
             return response()->json([
                 "status" => 1,
                 "message" => "Task deleted Successfully",
                 "project_boards" => $boards,
                 "task_types" => $taskTypes,
                 "assigned_users" => $getAssignedUsers,
+                "all_users" => $allUsers,
             ]);
         } catch (\Throwable $th) {
             $boards = $this->getBoards($request->project_id);
             $taskTypes = $this->getTaskTypes();
             $getAssignedUsers = $this->getProjectUsers($request->project_id);
+            $allUsers = $this->getAllUsers();
             return response()->json([
                 "status" => 0,
                 "message" => "Soemthing went wrong",
@@ -303,6 +318,69 @@ class ProjectsController extends Controller
                 "project_boards" => $boards,
                 "task_types" => $taskTypes,
                 "assigned_users" => $getAssignedUsers,
+                "all_users" => $allUsers,
+            ]);
+        }
+    }
+
+    /* add users to ptoject */
+    public function addUsersProject(Request $request)
+    {
+        try {
+            $getproject = Projects::where('project_id', $request->project_id)->first();
+            if ($getproject) {
+                Projects::create([
+                    "project_name" => $getproject->project_name,
+                    "project_assigned_to_id" => $request->user_id,
+                    "project_creation_date" => $getproject->project_creation_date,
+                    "project_deadline" => $getproject->project_creation_date,
+                    'account_id' => Auth::user()->account_id,
+                    'project_id' => $request->project_id,
+                ]);
+                $getAssignedUsers = $this->getProjectUsers($request->project_id);
+                $allUsers = $this->getAllUsers();
+                return response()->json([
+                    "status" => 1,
+                    "message" => "User added to project successfully and informed to user as well",
+                    "assigned_users" => $getAssignedUsers,
+                    "all_users" => $allUsers,
+                ]);
+            }
+        } catch (\Throwable $th) {
+            $getAssignedUsers = $this->getProjectUsers($request->project_id);
+            $allUsers = $this->getAllUsers();
+            return response()->json([
+                "status" => 0,
+                "message" => "Something went wrong",
+                "error" => $th->getMessage(),
+                "assigned_users" => $getAssignedUsers,
+                "all_users" => $allUsers,
+            ]);
+        }
+    }
+
+    /* remove users from project */
+    public function removeUsersProject(Request $request)
+    {
+        try {
+            Projects::where('project_id', $request->project_id)->where('project_assigned_to_id', $request->user_id)->delete();
+            $getAssignedUsers = $this->getProjectUsers($request->project_id);
+            $allUsers = $this->getAllUsers();
+            return response()->json([
+                "status" => 1,
+                "message" => "User removed from the project",
+                "assigned_users" => $getAssignedUsers,
+                "all_users" => $allUsers,
+            ]);
+        } catch (\Throwable $th) {
+            $getAssignedUsers = $this->getProjectUsers($request->project_id);
+            $allUsers = $this->getAllUsers();
+            return response()->json([
+                "status" => 0,
+                "message" => "Something went wrong",
+                "error" => $th->getMessage(),
+                "assigned_users" => $getAssignedUsers,
+                "all_users" => $allUsers,
             ]);
         }
     }
