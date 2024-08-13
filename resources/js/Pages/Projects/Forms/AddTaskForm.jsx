@@ -29,6 +29,7 @@ function AddTaskForm({ submitAction, project_id, task_types, board_id, users }) 
                     value: user.id,
                 }));
             setdependentRefinedUsers(dependentUserList);
+            setdependentUsers([]);
             settaskForm({ ...taskForm, ['assigned_user']: assignedUser });
         })()
     }, [assignedUser]);
@@ -121,7 +122,7 @@ function AddTaskForm({ submitAction, project_id, task_types, board_id, users }) 
                     <CreatableSelect
                         isClearable
                         options={task_types}
-                        defaultValue={selectBoxSelected}
+                        value={selectBoxSelected}
                         onChange={setselectBoxSelected}
                         placeholder="Select task type"
                         required
@@ -131,7 +132,7 @@ function AddTaskForm({ submitAction, project_id, task_types, board_id, users }) 
                     <Select
                         isClearable
                         options={refinedUsers}
-                        defaultValue={assignedUser}
+                        value={assignedUser}
                         onChange={setassignedUser}
                         placeholder="Select Assignee"
                         required
@@ -141,7 +142,7 @@ function AddTaskForm({ submitAction, project_id, task_types, board_id, users }) 
                     <Select
                         isClearable
                         options={dependentRefinedUsers}
-                        defaultValue={setdependentUsers}
+                        value={dependentUsers}
                         onChange={setdependentUsers}
                         placeholder="Select Dependent Assignees"
                         required
@@ -150,11 +151,11 @@ function AddTaskForm({ submitAction, project_id, task_types, board_id, users }) 
                 </div>
                 <div className="form-group">
                     <input required type="date" value={taskForm.task_start_date} name='task_start_date' onChange={(e) => { handleChange(e) }} placeholder='Start Date' className="form-control" />
-                    <label for="dateInput" class="date-placeholder">Select start date</label>
+                    <label htmlFor="dateInput" className="date-placeholder">Select start date</label>
                 </div>
                 <div className="form-group">
                     <input required type="date" value={taskForm.task_end_date} name='task_end_date' onChange={(e) => { handleChange(e) }} placeholder='End Date' className="form-control" />
-                    <label for="dateInput" class="date-placeholder">Select end date</label>
+                    <label htmlFor="dateInput" className="date-placeholder">Select end date</label>
                 </div>
                 <div className="form-group">
                     <input required type="text" value={taskForm.total_day} name='total_day' onChange={(e) => { handleChange(e) }} readOnly placeholder='Expected Total Days' className="form-control" />
