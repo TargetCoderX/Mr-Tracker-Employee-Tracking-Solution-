@@ -134,22 +134,22 @@ function AddTaskForm({ submitAction, project_id, task_types, board_id, users, is
                 "board_id": board_id,
                 "task_name": task_data.task_name,
                 "task_description": task_data.task_description,
-                "task_type": { "label": task_data.task_type.task_type_name, "value": task_data.task_type.id },
+                "task_type": task_data.task_type ? { "label": task_data.task_type.task_type_name, "value": task_data.task_type.id } : [],
                 "task_start_date": task_data.start_time_stamp,
                 "task_end_date": task_data.end_time_stamp,
                 "total_day": task_data.expected_total_time,
-                "assigned_user": {
+                "assigned_user": task_data?.assigned_user ? {
                     'label': `${task_data?.assigned_user?.first_name} ${task_data?.assigned_user?.last_name}`,
                     'value': task_data?.assigned_user?.id,
-                },
+                } : [],
                 "dependent_users": task_data.dependent_users ? JSON.parse(task_data.dependent_users) : [],
                 "task_id": task_data.id,
             })
-            setassignedUser({
+            setassignedUser(task_data?.assigned_user ? {
                 'label': `${task_data?.assigned_user?.first_name} ${task_data?.assigned_user?.last_name}`,
                 'value': task_data?.assigned_user?.id,
-            });
-            setselectBoxSelected({ "label": task_data.task_type.task_type_name, "value": task_data.task_type.id });
+            } : []);
+            setselectBoxSelected(task_data.task_type ? { "label": task_data.task_type.task_type_name, "value": task_data.task_type.id } : []);
             setdependentUsers(task_data.dependent_users ? JSON.parse(task_data.dependent_users) : []);
         }
     }, [task_data]);
@@ -190,7 +190,6 @@ function AddTaskForm({ submitAction, project_id, task_types, board_id, users, is
                         value={dependentUsers}
                         onChange={setdependentUsers}
                         placeholder="Select Dependent Assignees"
-                        required
                         isMulti
                     />
                 </div>
