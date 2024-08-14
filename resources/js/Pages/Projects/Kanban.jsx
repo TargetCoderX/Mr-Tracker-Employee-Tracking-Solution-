@@ -19,6 +19,7 @@ function Kanban({ auth }) {
     const [selectedBoard, setselectedBoard] = useState("");
     const [assignedUsers, setassignedUsers] = useState("");
     const [allUsers, setallUsers] = useState([]);
+    const [taskData, settaskData] = useState(null);
 
     const addNewGroup = async (newBoards) => {
         try {
@@ -47,6 +48,19 @@ function Kanban({ auth }) {
                     board_id={selectedBoard}
                     task_types={accountTaskTypes}
                     project_id={project_id}
+                    is_edit={false}
+                    task_data={null}
+                />
+                break;
+            case 'editTaskForm':
+                return <AddTaskForm
+                    users={assignedUsers}
+                    submitAction={taskSubmitAction}
+                    board_id={selectedBoard}
+                    task_types={accountTaskTypes}
+                    project_id={project_id}
+                    is_edit={true}
+                    task_data={taskData}
                 />
                 break;
             case 'showUserList':
@@ -65,6 +79,9 @@ function Kanban({ auth }) {
                 break;
             case 'showUserList':
                 setformTitle("User List");
+                break;
+            case 'editTaskForm':
+                setformTitle("Edit Task");
                 break;
             default:
                 setformTitle("");
@@ -213,6 +230,11 @@ function Kanban({ auth }) {
             toast.error("Something went wrong");
         }
     }
+
+    const edit_task = (taskData) => {
+        setformType("editTaskForm");
+        settaskData(taskData);
+    }
     return (
         <Authenticated user={auth}>
             <div className="row mb-2">
@@ -254,6 +276,8 @@ function Kanban({ auth }) {
                                                     drag_start={onDragStart}
                                                     key={index}
                                                     delete_task={deleteTask}
+                                                    edit_task={edit_task}
+                                                    update_board_id={setselectedBoard}
                                                 />
                                             })
                                         }

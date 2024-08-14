@@ -29,6 +29,10 @@ class Task extends Model
     {
         return $this->hasOne(TaskTypes::class, 'id', "task_type");
     }
+    public function assigned_user()
+    {
+        return $this->hasOne(User::class, 'id', 'assigned_to_user');
+    }
     public static function boot()
     {
         parent::boot();

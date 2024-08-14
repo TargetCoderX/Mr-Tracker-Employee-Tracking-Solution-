@@ -123,27 +123,44 @@ class ProjectsController extends Controller
                 $taskTypeId = $request->task_type['value'];
             }
 
-            Task::create([
-                "task_name" => $request->task_name,
-                "task_description" => $request->task_description,
-                "account_id" => Auth::user()->account_id,
-                "created_by_user" => Auth::id(),
-                "assigned_to_user" => $request->assigned_user['value'],
-                "dependent_users" => json_encode($request->dependent_users),
-                "start_time_stamp" => $request->task_start_date,
-                "end_time_stamp" => $request->task_end_date,
-                "expected_total_time" => $request->total_day,
-                "project_id" => $request->project_id,
-                "board_id" => $request->board_id,
-                "task_type" => $taskTypeId,
-            ]);
+            if (!$request->has('task_id')) {
+                Task::create([
+                    "task_name" => $request->task_name,
+                    "task_description" => $request->task_description,
+                    "account_id" => Auth::user()->account_id,
+                    "created_by_user" => Auth::id(),
+                    "assigned_to_user" => $request->assigned_user['value'],
+                    "dependent_users" => json_encode($request->dependent_users),
+                    "start_time_stamp" => $request->task_start_date,
+                    "end_time_stamp" => $request->task_end_date,
+                    "expected_total_time" => $request->total_day,
+                    "project_id" => $request->project_id,
+                    "board_id" => $request->board_id,
+                    "task_type" => $taskTypeId,
+                ]);
+            } else {
+                $task = Task::find($request->task_id);
+                $task->task_name = $request->task_name;
+                $task->task_description = $request->task_description;
+                $task->account_id = Auth::user()->account_id;
+                $task->created_by_user = Auth::id();
+                $task->assigned_to_user = $request->assigned_user['value'];
+                $task->dependent_users = json_encode($request->dependent_users);
+                $task->start_time_stamp = $request->task_start_date;
+                $task->end_time_stamp = $request->task_end_date;
+                $task->expected_total_time = $request->total_day;
+                $task->project_id = $request->project_id;
+                $task->board_id = $request->board_id;
+                $task->task_type = $taskTypeId;
+                $task->save();
+            }
             $boards = $this->getBoards($request->project_id);
             $taskTypes = $this->getTaskTypes();
             $getAssignedUsers = $this->getProjectUsers($request->project_id);
             $allUsers = $this->getAllUsers();
             return response()->json([
                 "status" => 1,
-                "message" => "Task Created",
+                "message" => !$request->has('task_id') ? "Task Created" : "Task Updated",
                 "boards" => $boards,
                 "task_types" => $taskTypes,
                 "assigned_users" => $getAssignedUsers,
@@ -172,7 +189,7 @@ class ProjectsController extends Controller
         return Board::where("account_id", Auth::user()->account_id)
             ->where('project_id', $project_id)
             ->orderBy('id', 'asc')
-            ->with(['tasks.task_type'])
+            ->with(['tasks.task_type', 'tasks.assigned_user'])
             ->get();
     }
 
