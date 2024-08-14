@@ -401,4 +401,23 @@ class ProjectsController extends Controller
             ]);
         }
     }
+
+    /* delete project */
+    public function deleteProjects(Request $request)
+    {
+        try {
+            Projects::where('project_id',$request->project_id)->delete();
+            Task::where('project_id',$request->project_id)->delete();
+            return response()->json([
+                "status"=>1,
+                "message"=>"Project deleted successfully",
+            ]);
+        } catch (\Throwable $th) {
+            return response()->json([
+                "status" => 0,
+                "message" => "Something went wrong",
+                "error" => $th->getMessage(),
+            ]);
+        }
+    }
 }

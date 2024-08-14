@@ -5,12 +5,13 @@ import React, { useEffect, useState } from 'react';
 import { toast } from 'react-toastify';
 import AddProjectForm from './Forms/AddProjectForm';
 import { Link } from '@inertiajs/react';
+import swal from 'sweetalert';
 
 function Projects({ auth }) {
     const [getallProjects, setgetallProjects] = useState([]);
     const [users, setusers] = useState([]);
 
-    const getAllroles = async () => {
+    const getAllProjectsFun = async () => {
         try {
             const response = await axios.get(route('api.get-all-projects'));
             if (response.data.status == 1) {
@@ -25,7 +26,7 @@ function Projects({ auth }) {
         }
     }
     useEffect(() => {
-        getAllroles();
+        getAllProjectsFun();
     }, []);
 
     const formSubmitCallback = async (data) => {
@@ -42,6 +43,7 @@ function Projects({ auth }) {
             toast.error("Something went wrong");
         }
     }
+
     const refineUsers = (users) => {
         const refinedUsers = users.map((user) => {
             return {
@@ -50,6 +52,32 @@ function Projects({ auth }) {
             }
         })
         setusers(refinedUsers);
+    }
+
+    const deleteProject = (e, project_id) => {
+        e.preventDefault();
+        swal({
+            title: "Are you sure?",
+            text: "Once deletedproject, all the task assigned with this project will be deleted",
+            icon: "warning",
+            buttons: true,
+            dangerMode: true,
+        })
+            .then(async (willDelete) => {
+                if (willDelete) {
+                    try {
+                        const response = await axios.post(route('api.delete-project'), { project_id });
+                        if (response.data.status == 1)
+                            toast.success(response.data.message);
+                        else
+                            toast.error(response.data.message);
+                        getAllProjectsFun();
+                    } catch (error) {
+                        console.log(error);
+                        toast.error("Something went wrong");
+                    }
+                }
+            });
     }
     return (
         <Authenticated user={auth}>
@@ -86,9 +114,8 @@ function Projects({ auth }) {
                                                     <td>{element.project_creation_date}</td>
                                                     <td>{element.project_deadline}</td>
                                                     <td>
-                                                        <button className="btn btn-warning btn-sm w-25 me-1">Edit</button>
-                                                        <Link className="btn btn-primary btn-sm w-25 me-1" href={route('kanban-board', { project_id: element.project_id })}>View Tasks</Link>
-                                                        <button className="btn btn-danger btn-sm w-25">Delete</button>
+                                                        <Link className="btn btn-primary btn-sm me-1" href={route('kanban-board', { project_id: element.project_id })} style={{ width: '150px' }}> <i className='fa fa-eye me-1'></i> View Tasks</Link>
+                                                        <button onClick={(e) => { deleteProject(e, element.project_id) }} className="btn btn-danger btn-sm" style={{ width: '150px' }}> <i className='fa fa-trash me-1'></i>Delete</button>
                                                     </td>
                                                 </tr>
                                             ))
