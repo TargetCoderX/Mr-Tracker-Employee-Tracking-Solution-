@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Board;
+use App\Models\ProjectAssignee;
 use App\Models\Projects;
 use App\Models\Task;
 use App\Models\TaskTypes;
@@ -57,14 +58,18 @@ class ProjectsController extends Controller
     {
         try {
             $projectId = Str::uuid();
+            Projects::create([
+                "project_name" => $request->project_name,
+                "project_creation_date" => $request->start_date,
+                "project_deadline" => $request->end_date,
+                'account_id' => Auth::user()->account_id,
+                'project_id' => $projectId,
+            ]);
             foreach ($request->assignee as $key => $assignedto) {
-                Projects::create([
-                    "project_name" => $request->project_name,
-                    "project_assigned_to_id" => $assignedto['value'],
-                    "project_creation_date" => $request->start_date,
-                    "project_deadline" => $request->end_date,
+                ProjectAssignee::create([
                     'account_id' => Auth::user()->account_id,
                     'project_id' => $projectId,
+                    'user_id' => $assignedto['value'],
                 ]);
             }
             $getallProjects = $this->getAllProject();
@@ -228,12 +233,12 @@ class ProjectsController extends Controller
     public function getProjectUsers($project_id)
     {
         try {
-            return Projects::where("project_id", $project_id)
-                ->with(['userDetails' => function ($query) {
+            return ProjectAssignee::where("project_id", $project_id)
+                ->with(['userRelation' => function ($query) {
                     $query->where('is_active', 1); // or 'is_active', 1 if it's a boolean
-                }, 'userDetails.roleRelation'])
+                }, 'userRelation.roleRelation'])
                 ->get()
-                ->pluck('userDetails')
+                ->pluck('userRelation')
                 ->flatten()
                 ->unique('id');
         } catch (\Throwable $th) {
@@ -346,13 +351,10 @@ class ProjectsController extends Controller
         try {
             $getproject = Projects::where('project_id', $request->project_id)->first();
             if ($getproject) {
-                Projects::create([
-                    "project_name" => $getproject->project_name,
-                    "project_assigned_to_id" => $request->user_id,
-                    "project_creation_date" => $getproject->project_creation_date,
-                    "project_deadline" => $getproject->project_creation_date,
+                ProjectAssignee::create([
                     'account_id' => Auth::user()->account_id,
                     'project_id' => $request->project_id,
+                    'user_id'=>$request->user_id,
                 ]);
                 $getAssignedUsers = $this->getProjectUsers($request->project_id);
                 $allUsers = $this->getAllUsers();
@@ -380,7 +382,7 @@ class ProjectsController extends Controller
     public function removeUsersProject(Request $request)
     {
         try {
-            Projects::where('project_id', $request->project_id)->where('project_assigned_to_id', $request->user_id)->delete();
+            ProjectAssignee::where('project_id',$request->project_id)->where('user_id',$request->user_id)->delete();
             $getAssignedUsers = $this->getProjectUsers($request->project_id);
             $allUsers = $this->getAllUsers();
             return response()->json([
@@ -406,11 +408,11 @@ class ProjectsController extends Controller
     public function deleteProjects(Request $request)
     {
         try {
-            Projects::where('project_id',$request->project_id)->delete();
-            Task::where('project_id',$request->project_id)->delete();
+            Projects::where('project_id', $request->project_id)->delete();
+            Task::where('project_id', $request->project_id)->delete();
             return response()->json([
-                "status"=>1,
-                "message"=>"Project deleted successfully",
+                "status" => 1,
+                "message" => "Project deleted successfully",
             ]);
         } catch (\Throwable $th) {
             return response()->json([

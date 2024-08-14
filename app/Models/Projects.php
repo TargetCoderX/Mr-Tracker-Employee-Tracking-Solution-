@@ -11,7 +11,6 @@ class Projects extends Model
     protected $table = 'projects';
     protected $fillable = [
         "project_name",
-        "project_assigned_to_id",
         "project_creation_date",
         "project_deadline",
         "account_id",
