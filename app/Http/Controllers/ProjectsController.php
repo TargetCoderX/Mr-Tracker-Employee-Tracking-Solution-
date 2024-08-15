@@ -410,6 +410,7 @@ class ProjectsController extends Controller
         try {
             Projects::where('project_id', $request->project_id)->delete();
             Task::where('project_id', $request->project_id)->delete();
+            ProjectAssignee::where('project_id', $request->project_id)->delete();
             return response()->json([
                 "status" => 1,
                 "message" => "Project deleted successfully",
