@@ -354,7 +354,7 @@ class ProjectsController extends Controller
                 ProjectAssignee::create([
                     'account_id' => Auth::user()->account_id,
                     'project_id' => $request->project_id,
-                    'user_id'=>$request->user_id,
+                    'user_id' => $request->user_id,
                 ]);
                 $getAssignedUsers = $this->getProjectUsers($request->project_id);
                 $allUsers = $this->getAllUsers();
@@ -382,7 +382,7 @@ class ProjectsController extends Controller
     public function removeUsersProject(Request $request)
     {
         try {
-            ProjectAssignee::where('project_id',$request->project_id)->where('user_id',$request->user_id)->delete();
+            ProjectAssignee::where('project_id', $request->project_id)->where('user_id', $request->user_id)->delete();
             $getAssignedUsers = $this->getProjectUsers($request->project_id);
             $allUsers = $this->getAllUsers();
             return response()->json([
@@ -411,6 +411,7 @@ class ProjectsController extends Controller
             Projects::where('project_id', $request->project_id)->delete();
             Task::where('project_id', $request->project_id)->delete();
             ProjectAssignee::where('project_id', $request->project_id)->delete();
+            Board::where('project_id', $request->project_id)->delete();
             return response()->json([
                 "status" => 1,
                 "message" => "Project deleted successfully",
@@ -422,5 +423,10 @@ class ProjectsController extends Controller
                 "error" => $th->getMessage(),
             ]);
         }
+    }
+
+    /* task timer settings */
+    public function updateTaskTimer(Request $request) {
+
     }
 }

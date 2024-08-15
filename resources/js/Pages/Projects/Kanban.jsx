@@ -235,6 +235,11 @@ function Kanban({ auth }) {
         setformType("editTaskForm");
         settaskData(taskData);
     }
+
+    /* update task timer */
+    const updateTaskTimer=(data)=>{
+        console.log(data);
+    }
     return (
         <Authenticated user={auth}>
             <div className="row mb-2">
@@ -278,6 +283,7 @@ function Kanban({ auth }) {
                                                     delete_task={deleteTask}
                                                     edit_task={edit_task}
                                                     update_board_id={setselectedBoard}
+                                                    update_task_timer={updateTaskTimer}
                                                 />
                                             })
                                         }

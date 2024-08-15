@@ -341,3 +341,12 @@
     /* Darker color when hovered */
 }
 
+.play-button{
+    /* font-size: 20px !important; */
+    color: rgb(0, 136, 0);
+}
+.pause-button{
+    /* font-size: 20px !important; */
+    color: rgb(212, 0, 0);
+}
+

@@ -48,6 +48,9 @@ Route::prefix('api')->as('api.')->group(function () {
             Route::put('/update-task-board', 'updateTaskBoard')->name('update-task-board');
             Route::post("add-users-project", 'addUsersProject')->name('add-users-project');
             Route::post("remove-users-project", 'removeUsersProject')->name('remove-users-project');
+
+            /* task timer */
+            Route::post('update-task-timer', 'updateTaskTimer')->name('update-task-timer');
         });
     });
 });
