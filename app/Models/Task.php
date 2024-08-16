@@ -4,12 +4,13 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Str;
 
 class Task extends Model
 {
     use HasFactory;
-    protected $yable = "tasks";
+    protected $table = "tasks";
     protected $fillable = [
         "task_name",
         "task_description",
@@ -33,6 +34,15 @@ class Task extends Model
     {
         return $this->hasOne(User::class, 'id', 'assigned_to_user');
     }
+
+   /*  public function task_status($user_id, $date)
+    {
+        return TimeEntries::where('user_id', Auth::id())
+            ->where('status', 'Active')
+            ->whereNull('end_time')
+            ->where('date', $date)
+            ->exists();
+    } */
     public static function boot()
     {
         parent::boot();

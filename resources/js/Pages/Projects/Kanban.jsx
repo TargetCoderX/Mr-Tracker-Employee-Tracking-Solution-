@@ -245,10 +245,13 @@ function Kanban({ auth }) {
                 toast.success(response.data.message);
             else
                 toast.error(response.data.message);
+            setboards(response.data.project_boards);
+            setaccountTaskTypes(response.data.task_types);
+            setassignedUsers(response.data.assigned_users);
+            setallUsers(response.data.all_users);
             return response.data.status;
         } catch (error) {
             return 0;
-            toast.error("Something Went Wrong");
         }
     }
     return (

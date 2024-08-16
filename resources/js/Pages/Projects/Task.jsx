@@ -14,6 +14,10 @@ function Task({ task, drag_start, board_id, delete_task, edit_task, update_board
         if (response == 1)
             setisPlaying(!isPlaying);
     }
+
+    useEffect(() => {
+        setisPlaying(task.task_status);
+    }, [task]);
     return (
         <div className="card m-1" draggable onDragStart={(e) => drag_start(e, task.id, board_id)} style={{ backgroundColor: "#f5f5f5" }}>
             <div className="card-body">

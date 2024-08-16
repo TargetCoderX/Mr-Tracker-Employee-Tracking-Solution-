@@ -193,11 +193,25 @@ class ProjectsController extends Controller
     /* get boards */
     public function getBoards($project_id)
     {
-        return Board::where("account_id", Auth::user()->account_id)
+        $board =  Board::where("account_id", Auth::user()->account_id)
             ->where('project_id', $project_id)
             ->orderBy('id', 'asc')
             ->with(['tasks.task_type', 'tasks.assigned_user'])
             ->get();
+
+        foreach ($board as $key => &$value) {
+            foreach ($value->tasks as &$task) {
+                $getTaskStatus = TimeEntries::where('user_id', Auth::id())
+                    ->where('project_id', $task->project_id)
+                    ->where('task_id', $task->id)
+                    ->where('date', Carbon::now()->toDateString())
+                    ->where('status', 'Active')
+                    ->orderBy('id', 'desc')
+                    ->exists();
+                $task->task_status = $getTaskStatus;
+            }
+        }
+        return $board;
     }
 
     /* save boards */
@@ -437,6 +451,20 @@ class ProjectsController extends Controller
         $month = $today->copy()->month;
         if ($request->is_playing) {
             try {
+                /* close all other tasks */
+                $data = TimeEntries::where('user_id', Auth::id())
+                    ->where('date', Carbon::now()->toDateString())
+                    ->where('status', 'Active');
+                if ($data->first()) {
+                    // dd($data->first());
+                    // dd($data->first()->start_time);
+                    $data->update([
+                        "status" => "Stopped",
+                        "end_time" => Carbon::now()->valueOf(),
+                        'total_hours' => (int)Carbon::now()->valueOf() - (int)$data->first()->start_time,
+                    ]);
+                }
+
                 TimeEntries::create([
                     "user_id" => Auth::id(),
                     "account_id" => Auth::user()->account_id,
@@ -449,15 +477,31 @@ class ProjectsController extends Controller
                     "year" => $year,
                     "status" => 'Active',
                 ]);
+                $boards = $this->getBoards($request->project_id);
+                $taskTypes = $this->getTaskTypes();
+                $getAssignedUsers = $this->getProjectUsers($request->project_id);
+                $allUsers = $this->getAllUsers();
                 return response()->json([
                     "status" => 1,
                     "message" => "Timer Started",
+                    "project_boards" => $boards,
+                    "task_types" => $taskTypes,
+                    "assigned_users" => $getAssignedUsers,
+                    "all_users" => $allUsers,
                 ]);
             } catch (\Throwable $th) {
+                $boards = $this->getBoards($request->project_id);
+                $taskTypes = $this->getTaskTypes();
+                $getAssignedUsers = $this->getProjectUsers($request->project_id);
+                $allUsers = $this->getAllUsers();
                 return response()->json([
                     "status" => 0,
                     "message" => "Something went wrong",
                     "error" => $th->getMessage(),
+                    "project_boards" => $boards,
+                    "task_types" => $taskTypes,
+                    "assigned_users" => $getAssignedUsers,
+                    "all_users" => $allUsers,
                 ]);
             }
         } else {
@@ -475,16 +519,32 @@ class ProjectsController extends Controller
                     $checktheRunningTask->status = 'Stopped';
                     $checktheRunningTask->total_hours = $today->copy()->valueOf() - $checktheRunningTask->start_time;
                     $checktheRunningTask->save();
+                    $boards = $this->getBoards($request->project_id);
+                    $taskTypes = $this->getTaskTypes();
+                    $getAssignedUsers = $this->getProjectUsers($request->project_id);
+                    $allUsers = $this->getAllUsers();
                     return response()->json([
                         "status" => 1,
                         "message" => "Timer Stopped",
+                        "project_boards" => $boards,
+                        "task_types" => $taskTypes,
+                        "assigned_users" => $getAssignedUsers,
+                        "all_users" => $allUsers,
                     ]);
                 }
             } catch (\Throwable $th) {
+                $boards = $this->getBoards($request->project_id);
+                $taskTypes = $this->getTaskTypes();
+                $getAssignedUsers = $this->getProjectUsers($request->project_id);
+                $allUsers = $this->getAllUsers();
                 return response()->json([
                     "status" => 0,
                     "message" => "Something went wrong",
                     "error" => $th->getMessage(),
+                    "project_boards" => $boards,
+                    "task_types" => $taskTypes,
+                    "assigned_users" => $getAssignedUsers,
+                    "all_users" => $allUsers,
                 ]);
             }
         }
