@@ -17,8 +17,10 @@ class TimeEntries extends Model
         "start_time",
         "end_time",
         "total_hours",
+        "date",
         "week",
         "month",
         "year",
+        "status",
     ];
 }

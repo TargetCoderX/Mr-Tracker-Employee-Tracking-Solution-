@@ -237,8 +237,19 @@ function Kanban({ auth }) {
     }
 
     /* update task timer */
-    const updateTaskTimer=(data)=>{
-        console.log(data);
+    const updateTaskTimer = async (data) => {
+        try {
+            data.project_id = project_id;
+            const response = await axios.post(route('api.update-task-timer'), data);
+            if (response.data.status == 1)
+                toast.success(response.data.message);
+            else
+                toast.error(response.data.message);
+            return response.data.status;
+        } catch (error) {
+            return 0;
+            toast.error("Something Went Wrong");
+        }
     }
     return (
         <Authenticated user={auth}>

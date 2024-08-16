@@ -13,16 +13,18 @@ return new class extends Migration
     {
         Schema::create('time_entries', function (Blueprint $table) {
             $table->id();
-            $table->integer('user_id');
-            $table->string('account_id');
-            $table->string('project_id');
-            $table->string('task_id');
-            $table->string('start_time');
-            $table->string('end_time');
-            $table->string('total_hours');
-            $table->integer('week');
-            $table->integer('month');
-            $table->integer('year');
+            $table->integer('user_id')->nullable();
+            $table->string('account_id')->nullable();
+            $table->string('project_id')->nullable();
+            $table->string('task_id')->nullable();
+            $table->string('start_time')->nullable();
+            $table->string('end_time')->nullable();
+            $table->string('total_hours')->nullable();
+            $table->string('status')->nullable();
+            $table->string('date')->nullable();
+            $table->integer('week')->nullable();
+            $table->integer('month')->nullable();
+            $table->integer('year')->nullable();
             $table->timestamps();
         });
     }

@@ -3,15 +3,16 @@ import React, { useEffect, useState } from 'react';
 
 function Task({ task, drag_start, board_id, delete_task, edit_task, update_board_id, update_task_timer }) {
     const [isPlaying, setisPlaying] = useState(false);
-    const actionTaskTimer = async (e,task_id, board_id) => {
+    const actionTaskTimer = async (e, task_id, board_id) => {
         e.preventDefault();
         const data = {
             board_id,
             task_id,
             is_playing: !isPlaying
         }
-        update_task_timer(data);
-        setisPlaying(!isPlaying);
+        const response = await update_task_timer(data);
+        if (response == 1)
+            setisPlaying(!isPlaying);
     }
     return (
         <div className="card m-1" draggable onDragStart={(e) => drag_start(e, task.id, board_id)} style={{ backgroundColor: "#f5f5f5" }}>
@@ -35,7 +36,7 @@ function Task({ task, drag_start, board_id, delete_task, edit_task, update_board
                     </div>
                 </div>
                 <div className='text-end m-2'>
-                    <a href="#" className='btn btn-rounded' onClick={(e) => { actionTaskTimer(e,task.id, board_id) }}>
+                    <a href="#" className='btn btn-rounded' onClick={(e) => { actionTaskTimer(e, task.id, board_id) }}>
                         <i className={!isPlaying ? 'fa fa-play play-button' : 'fa fa-pause pause-button'}></i>
                     </a>
                 </div>

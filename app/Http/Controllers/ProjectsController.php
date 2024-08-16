@@ -7,7 +7,9 @@ use App\Models\ProjectAssignee;
 use App\Models\Projects;
 use App\Models\Task;
 use App\Models\TaskTypes;
+use App\Models\TimeEntries;
 use App\Models\User;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Inertia\Inertia;
@@ -426,7 +428,65 @@ class ProjectsController extends Controller
     }
 
     /* task timer settings */
-    public function updateTaskTimer(Request $request) {
+    public function updateTaskTimer(Request $request)
+    {
+        $today = Carbon::now();
+        $date = $today->copy()->toDateString();
+        $week = $today->copy()->week();
+        $year = $today->copy()->year;
+        $month = $today->copy()->month;
+        if ($request->is_playing) {
+            try {
+                TimeEntries::create([
+                    "user_id" => Auth::id(),
+                    "account_id" => Auth::user()->account_id,
+                    "project_id" => $request->project_id,
+                    "task_id" => $request->task_id,
+                    "start_time" => $today->copy()->valueOf(),
+                    "date" => $date,
+                    "week" => $week,
+                    "month" => $month,
+                    "year" => $year,
+                    "status" => 'Active',
+                ]);
+                return response()->json([
+                    "status" => 1,
+                    "message" => "Timer Started",
+                ]);
+            } catch (\Throwable $th) {
+                return response()->json([
+                    "status" => 0,
+                    "message" => "Something went wrong",
+                    "error" => $th->getMessage(),
+                ]);
+            }
+        } else {
+            try {
+                $checktheRunningTask = TimeEntries::where('user_id', Auth::id())
+                    ->where('account_id', Auth::user()->account_id)
+                    ->where('task_id', $request->task_id)
+                    ->where('project_id', $request->project_id)
+                    ->where('status', "Active")
+                    ->where('date', $date)
+                    ->first();
 
+                if ($checktheRunningTask) {
+                    $checktheRunningTask->end_time = $today->copy()->valueOf();
+                    $checktheRunningTask->status = 'Stopped';
+                    $checktheRunningTask->total_hours = $today->copy()->valueOf() - $checktheRunningTask->start_time;
+                    $checktheRunningTask->save();
+                    return response()->json([
+                        "status" => 1,
+                        "message" => "Timer Stopped",
+                    ]);
+                }
+            } catch (\Throwable $th) {
+                return response()->json([
+                    "status" => 0,
+                    "message" => "Something went wrong",
+                    "error" => $th->getMessage(),
+                ]);
+            }
+        }
     }
 }
