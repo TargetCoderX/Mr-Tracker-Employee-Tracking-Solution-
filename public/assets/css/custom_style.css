@@ -318,7 +318,7 @@
 
 /* For WebKit browsers */
 ::-webkit-scrollbar {
-    width: 6px;
+    width: 3px;
     /* Width of the vertical scrollbar */
     height: 6px;
     /* Height of the horizontal scrollbar */

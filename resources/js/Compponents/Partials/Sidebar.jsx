@@ -17,12 +17,12 @@ function Sidebar() {
                     <span className="menu-title">All Projects</span>
                 </Link></li>
                 {/* <li className="nav-item">
-                    <a className="nav-link" data-bs-toggle="collapse" href="#ui-basic" aria-expanded="false" aria-controls="ui-basic">
+                    <a className="nav-link" data-bs-toggle="collapse" href="#leave-request" aria-expanded="false" aria-controls="leave-request">
                         <i className="menu-icon mdi mdi-floor-plan"></i>
                         <span className="menu-title">Projects</span>
                         <i className="menu-arrow"></i>
                     </a>
-                    <div className="collapse" id="ui-basic">
+                    <div className="collapse" id="leave-request">
                         <ul className="nav flex-column sub-menu">
                             <li className="nav-item"> <Link className="nav-link" href={route('projects')}>All Projects</Link></li>
                             <li className="nav-item"> <Link className="nav-link" href={route('kanban-board')}>Kanban Board</Link></li>
@@ -40,6 +40,19 @@ function Sidebar() {
                         <i className="menu-icon mdi mdi-tag-check"></i>
                         <span className="menu-title">Roles</span>
                     </Link>
+                </li>
+                <li className="nav-item">
+                    <a className="nav-link" data-bs-toggle="collapse" href="#leave-request" aria-expanded="false" aria-controls="leave-request">
+                        <i className="menu-icon mdi mdi-calendar-range"></i>
+                        <span className="menu-title">Leaves</span>
+                        <i className="menu-arrow"></i>
+                    </a>
+                    <div className="collapse" id="leave-request">
+                        <ul className="nav flex-column sub-menu">
+                            <li className="nav-item"> <Link className="nav-link" href={route('member-leaves')}>Member Leaves</Link></li>
+                            <li className="nav-item"> <Link className="nav-link" href={'#'}>Holiday List</Link></li>
+                        </ul>
+                    </div>
                 </li>
             </ul>
         </nav>

@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\AuthenticationController;
+use App\Http\Controllers\LeaveManagementController;
 use App\Http\Controllers\ProjectsController;
 use App\Http\Controllers\RolesController;
 use App\Http\Controllers\UserController;
@@ -49,6 +50,12 @@ Route::middleware('auth')->group(function () {
             Route::get('/projects', 'gotoProjectPage')->name('projects');
             Route::get('/kanban-board/{project_id}', 'showKanbanBoard')->middleware(kanbanBoardProtector::class)->name('kanban-board');
         });
+
+        /* leave management controller group */
+        Route::controller(LeaveManagementController::class)->group(function () {
+            Route::get('/member-leaves', 'showMemberLeavePage')->name('member-leaves');
+        });
+
 
         /* testing routes */
         Route::get("/dashboard", function () {
