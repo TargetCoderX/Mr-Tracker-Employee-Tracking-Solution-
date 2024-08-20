@@ -1,3 +1,4 @@
+import { Link, router } from '@inertiajs/react';
 import React from 'react';
 function NavBar({ user }) {
     return (
@@ -159,7 +160,7 @@ function NavBar({ user }) {
                                 <p className="mb-1 mt-3 fw-semibold">{user.name}</p>
                                 <p className="fw-light text-muted mb-0">{user.email}</p>
                             </div>
-                            <a className="dropdown-item"><i className="dropdown-item-icon mdi mdi-account-outline text-primary me-2"></i> My Profile <span className="badge badge-pill badge-danger">1</span></a>
+                            <Link className="dropdown-item" href={route('account-profile')}><i className="dropdown-item-icon mdi mdi-account-outline text-primary me-2"></i> Account Profile <span className="badge badge-pill badge-danger">1</span></Link>
                             <a className="dropdown-item"><i className="dropdown-item-icon mdi mdi-message-text-outline text-primary me-2"></i> Messages</a>
                             <a className="dropdown-item"><i className="dropdown-item-icon mdi mdi-calendar-check-outline text-primary me-2"></i> Activity</a>
                             <a className="dropdown-item"><i className="dropdown-item-icon mdi mdi-help-circle-outline text-primary me-2"></i> FAQ</a>

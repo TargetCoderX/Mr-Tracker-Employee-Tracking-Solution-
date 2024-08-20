@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\AccountProfileController;
 use App\Http\Controllers\AuthenticationController;
 use App\Http\Controllers\LeaveManagementController;
 use App\Http\Controllers\ProjectsController;
@@ -54,6 +55,11 @@ Route::middleware('auth')->group(function () {
         /* leave management controller group */
         Route::controller(LeaveManagementController::class)->group(function () {
             Route::get('/member-leaves', 'showMemberLeavePage')->name('member-leaves');
+        });
+
+        /* profile controller group */
+        Route::controller(AccountProfileController::class)->group(function () {
+            Route::get('/account-profile', 'profile')->name('account-profile');
         });
 
 
