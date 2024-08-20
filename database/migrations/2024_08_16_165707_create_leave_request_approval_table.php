@@ -18,6 +18,7 @@ return new class extends Migration
             $table->integer('approved_by');
             $table->string('status');
             $table->string('approval_date');
+            $table->string('reason')->nullable();
             $table->timestamps();
         });
     }
