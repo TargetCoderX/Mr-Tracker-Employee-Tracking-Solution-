@@ -12,11 +12,11 @@ function LeaveRequestForm({ accountLeaves, applyLeave }) {
             <div className="row">
                 <div className="col-md-12 mb-2">
                     <label htmlFor="" className='form-label'>Leave Type</label>
-                    <select value={formData.leave_type} required onChange={(e) => { handleChange(e) }} name="leave_type" id="leave_type" className="form-control">
+                    <select value={formData.leave_type} required onChange={(e) => { handleChange(e) }} name="leave_type" id="leave_type" className="form-control text-dark">
                         <option value="" style={{ display: "none" }}>Select Leave Type</option>
                         {
-                            accountLeaves && accountLeaves.map((leave) => (
-                                <option value={leave.id}>{leave.leave_name} ({leave.amount})</option>
+                            accountLeaves && accountLeaves.map((leave, index) => (
+                                <option value={leave.id} key={index}>{leave.leave_name} ({leave.amount})</option>
                             ))
                         }
                     </select>
@@ -31,7 +31,7 @@ function LeaveRequestForm({ accountLeaves, applyLeave }) {
                 </div>
                 <div className="col-md-12 mb-2">
                     <label htmlFor="" className='form-label'>Leave Shift</label>
-                    <select value={formData.leave_shift} required onChange={(e) => { handleChange(e) }} name="leave_shift" id="leave_shift" className='form-control'>
+                    <select value={formData.leave_shift} required onChange={(e) => { handleChange(e) }} name="leave_shift" id="leave_shift" className='form-control text-dark'>
                         <option value="" style={{ display: "none" }}>Select Leave Shift</option>
                         <option value="first_half">First Half</option>
                         <option value="second_half">Second Half</option>

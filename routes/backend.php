@@ -3,6 +3,7 @@
 use App\Http\Controllers\AccountProfileController;
 use App\Http\Controllers\AuthenticationController;
 use App\Http\Controllers\Controller;
+use App\Http\Controllers\LeaveManagementController;
 use App\Http\Controllers\ProjectsController;
 use App\Http\Controllers\RolesController;
 use App\Http\Controllers\UserController;
@@ -29,7 +30,7 @@ Route::prefix('api')->as('api.')->group(function () {
             Route::post("delete-roles", "deleteRoles")->name("delete-roles");
         });
 
-        /* usees controller group */
+        /* uses controller group */
         Route::controller(UserController::class)->group(function () {
             Route::get("/get-all-users", 'getAllUsers')->name("get-all-users");
             Route::post("/manually-save-users", 'manuallySaveUsers')->name("manually-save-users");
@@ -52,6 +53,11 @@ Route::prefix('api')->as('api.')->group(function () {
 
             /* task timer */
             Route::post('update-task-timer', 'updateTaskTimer')->name('update-task-timer');
+        });
+
+        /* leave management group */
+        Route::controller(LeaveManagementController::class)->group(function () {
+            Route::post("/save-member-leave", 'saveMemberLeave')->name('save-member-leave');
         });
 
         /* account settings group */
