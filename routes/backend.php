@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\AccountProfileController;
 use App\Http\Controllers\AuthenticationController;
 use App\Http\Controllers\Controller;
 use App\Http\Controllers\ProjectsController;
@@ -51,6 +52,11 @@ Route::prefix('api')->as('api.')->group(function () {
 
             /* task timer */
             Route::post('update-task-timer', 'updateTaskTimer')->name('update-task-timer');
+        });
+
+        /* account settings group */
+        Route::controller(AccountProfileController::class)->group(function () {
+            Route::post('/save-account-profile', 'saveAccountProfile')->name('save-account-profile');
         });
     });
 });
