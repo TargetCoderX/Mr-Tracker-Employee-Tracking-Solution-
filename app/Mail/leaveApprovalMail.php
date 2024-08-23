@@ -41,7 +41,7 @@ class leaveApprovalMail extends Mailable
     {
         return new Content(
             view: 'mails.leave_approve_mail',
-            with: [],
+            with: $this->data,
         );
     }
 

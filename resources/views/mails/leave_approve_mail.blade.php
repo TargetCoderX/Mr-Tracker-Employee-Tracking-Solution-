@@ -7,8 +7,8 @@
     <meta content="text/html; charset=utf-8" http-equiv="Content-Type" />
     <meta content="width=device-width, initial-scale=1.0" name="viewport" />
     <!--[if mso]><xml><o:OfficeDocumentSettings><o:PixelsPerInch>96</o:PixelsPerInch><o:AllowPNG/></o:OfficeDocumentSettings></xml><![endif]--><!--[if !mso]><!-->
-    <link href="https://fonts.googleapis.com/css2?family=Ubuntu:wght@100;200;300;400;500;600;700;800;900"
-        rel="stylesheet" type="text/css" /><!--<![endif]-->
+    <link href="https://fonts.googleapis.com/css2?family=Ubuntu:wght@100;200;300;400;500;600;700;800;900" rel="stylesheet"
+        type="text/css" /><!--<![endif]-->
     <style>
         * {
             box-sizing: border-box;
@@ -147,7 +147,7 @@
                                                                             style="outline:none" tabindex="-1"
                                                                             target="_blank"><img alt="hero image"
                                                                                 height="auto"
-                                                                                src="{{asset('mail_images/leave_apply.png')}}"
+                                                                                src="{{ asset('mail_images/leave_apply.png') }}"
                                                                                 style="display: block; height: auto; border: 0; width: 100%;"
                                                                                 title="hero image" width="570" /></a>
                                                                     </div>
@@ -203,22 +203,27 @@
                                                                 <div
                                                                     style="color:#1e2e2a;direction:ltr;font-family:'Ubuntu', Tahoma, Verdana, Segoe, sans-serif;font-size:18px;font-weight:300;letter-spacing:1px;line-height:120%;text-align:center;mso-line-height-alt:21.599999999999998px;">
                                                                     <p style="margin: 0; margin-bottom: 16px;">
-                                                                        This is to inform you that [Employee Name] has
+                                                                        This is to inform you that
+                                                                        {{ $requester_first_name }}
+                                                                        {{ $requester_last_name }} has
                                                                         submitted a request for leave and requires your
                                                                         approval. Please review the details below:
                                                                     </p>
                                                                     <div style="text-align: center;">
-                                                                        <ul style="display: inline-block; text-align: left;">
+                                                                        <ul
+                                                                            style="display: inline-block; text-align: left;">
                                                                             <li style="text-align: start;">Leave Type:
-                                                                                [Type of Leave, e.g., Annual Leave, Sick
-                                                                                Leave]</li>
+                                                                                {{ $leave_type }}</li>
                                                                             <li style="text-align: start;">Leave
-                                                                                Duration: [Start Date] to [End Date]
+                                                                                Duration: {{ $start_date }} to
+                                                                                {{ $end_date }}
                                                                             </li>
-                                                                            <li style="text-align: start;">Total Days:
-                                                                                [Total Number of Days]</li>
+                                                                            <li style="text-align: start;">Total
+                                                                                Days:{{ $total_days }}</li>
+                                                                            <li style="text-align: start;">
+                                                                                Shift:{{ $leave_shift }}</li>
                                                                             <li style="text-align: start;">Reason for
-                                                                                Leave: [Reason, if provided]</li>
+                                                                                Leave: {{ $reason_of_leave }}</li>
                                                                         </ul>
                                                                     </div>
                                                                     <p>
@@ -268,7 +273,8 @@
 <w:anchorlock/>
 <v:textbox inset="0px,0px,0px,0px">
 <center dir="false" style="color:#1e2e2a;font-family:Tahoma, Verdana, sans-serif;font-size:18px">
-<![endif]--><a href="https://www.example.com" style="background-color:transparent;border-bottom:2px solid #AFC3A6;border-left:2px solid #AFC3A6;border-radius:20px;border-right:2px solid #AFC3A6;border-top:2px solid #AFC3A6;color:#1e2e2a;display:inline-block;font-family:'Ubuntu', Tahoma, Verdana, Segoe, sans-serif;font-size:18px;font-weight:300;mso-border-alt:none;padding-bottom:3px;padding-top:3px;text-align:center;text-decoration:none;width:auto;word-break:keep-all;"
+<![endif]--><a href="{{ route('approve-leave', ['id' => $leave_id]) }}"
+                                                                        style="background-color:transparent;border-bottom:2px solid #AFC3A6;border-left:2px solid #AFC3A6;border-radius:20px;border-right:2px solid #AFC3A6;border-top:2px solid #AFC3A6;color:#1e2e2a;display:inline-block;font-family:'Ubuntu', Tahoma, Verdana, Segoe, sans-serif;font-size:18px;font-weight:300;mso-border-alt:none;padding-bottom:3px;padding-top:3px;text-align:center;text-decoration:none;width:auto;word-break:keep-all;"
                                                                         target="_blank"><span
                                                                             style="word-break: break-word; padding-left: 20px; padding-right: 20px; font-size: 18px; display: inline-block; letter-spacing: 1px;"><span
                                                                                 style="word-break: break-word; line-height: 27px;">Review

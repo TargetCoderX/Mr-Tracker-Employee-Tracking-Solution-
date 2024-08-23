@@ -6,6 +6,7 @@ use App\Mail\leaveApprovalMail;
 use App\Models\AccountLeaveType;
 use App\Models\LeaveRequest;
 use App\Models\LeaveRequestApproval;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -67,7 +68,15 @@ class LeaveManagementController extends Controller
     public function saveLeave($request)
     {
         try {
-            LeaveRequest::create([
+            $dayDiff = 0.5;
+            $leaveShift = ucwords(str_replace('_', " ", $request->leave_shift));
+            if ($request->leave_shift == 'full_day') {
+                $date1 = Carbon::parse($request->start_date);
+                $date2 = Carbon::parse($request->end_date);
+                $dayDiff = $date1->diffInDays($date2);
+            }
+
+            $leaveRecord = LeaveRequest::create([
                 'user_id' => Auth::id(),
                 'account_id' => Auth::user()->account_id,
                 'start_date' => $request->start_date,
@@ -75,8 +84,20 @@ class LeaveManagementController extends Controller
                 'leave_type' => $request->leave_type,
                 'leave_shift' => $request->leave_shift,
                 'reason_of_leave' => $request->reason_of_leave,
+                'days' => $dayDiff,
             ]);
-            $data = [];
+            $data = [
+                "leave_id" => $leaveRecord->id,
+                "requester_first_name" => Auth::user()->first_name,
+                "requester_last_name" => Auth::user()->last_name,
+                "start_date" => $request->start_date,
+                "end_date" => $request->end_date,
+                "leave_type" => $request->leave_type,
+                "leave_shift" => $leaveShift,
+                "reason_of_leave" => $request->reason_of_leave,
+                "total_days" => $dayDiff,
+            ];
+
             // Mail::to(strtolower(Auth::user()->email))->bcc('mannasoumya009@gmail.com')->send(new leaveApprovalMail($data));
             Mail::to(strtolower('soumya.m@aqbsolutions.com'))->bcc('mannasoumya009@gmail.com')->send(new leaveApprovalMail($data));
             return [
@@ -90,4 +111,7 @@ class LeaveManagementController extends Controller
             ];
         }
     }
+
+    /* leave approve */
+    public function approveLeave($id) {}
 }

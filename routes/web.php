@@ -55,6 +55,7 @@ Route::middleware('auth')->group(function () {
         /* leave management controller group */
         Route::controller(LeaveManagementController::class)->group(function () {
             Route::get('/member-leaves', 'showMemberLeavePage')->name('member-leaves');
+            Route::get('/approve-leave/{id}', 'approveLeave')->name('approve-leave');
         });
 
         /* profile controller group */

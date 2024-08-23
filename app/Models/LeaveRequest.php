@@ -17,6 +17,7 @@ class LeaveRequest extends Model
         'leave_type',
         'leave_shift',
         'reason_of_leave',
+        'days',
     ];
 
     public function requestApproval()
