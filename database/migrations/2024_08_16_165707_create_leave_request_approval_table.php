@@ -15,9 +15,9 @@ return new class extends Migration
             $table->id();
             $table->integer('leave_id');
             $table->string('account_id');
-            $table->integer('approved_by');
+            $table->integer('action_talen_by');
             $table->string('status');
-            $table->string('approval_date');
+            $table->string('action_date');
             $table->string('reason')->nullable();
             $table->timestamps();
         });

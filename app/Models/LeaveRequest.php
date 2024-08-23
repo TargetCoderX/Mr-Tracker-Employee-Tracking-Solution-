@@ -18,4 +18,9 @@ class LeaveRequest extends Model
         'leave_shift',
         'reason_of_leave',
     ];
+
+    public function requestApproval()
+    {
+        return $this->hasMany(LeaveRequestApproval::class, 'leave_id', 'id');
+    }
 }
