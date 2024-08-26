@@ -6,7 +6,7 @@ import { toast } from 'react-toastify';
 
 function Profile({ auth }) {
     const { leavesAccount } = usePage().props;
-    const [Leaves, setLeaves] = useState([{ "leave_name": "", "amount": 0 }]);
+    const [Leaves, setLeaves] = useState([{ "id": "", "leave_name": "", "amount": 0 }]);
 
     useEffect(() => {
         setLeaves(leavesAccount);
@@ -14,7 +14,7 @@ function Profile({ auth }) {
 
     const addNewLeave = (e) => {
         e.preventDefault();
-        setLeaves([...Leaves, { "leave_name": "", "amount": 0 }])
+        setLeaves([...Leaves, { "id": "", "leave_name": "", "amount": 0 }])
     }
 
     const changeHandlerLeave = (e, index) => {

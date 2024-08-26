@@ -79,11 +79,15 @@ function MemberLeave({ auth }) {
                                             <td>{leave.leave_shift}</td>
                                             <td>{leave.reason_of_leave}</td>
                                             <td>
-                                                <span className={`badge ${leave.request_approval.length === 0 ? 'bg-warning' : leave.request_approval.status === 0 ? 'bg-danger' : 'bg-success'} rounded-pill w-100`}>{leave.request_approval.length === 0 ? 'Waiting for Approval' : leave.request_approval.status === 0 ? 'Rejected' : 'Approved'}</span>
+                                                <span className={`badge ${leave.request_approval.length === 0 ? 'bg-warning' : leave.request_approval.status === 'rejected' ? 'bg-danger' : 'bg-success'} rounded-pill w-100`}>{leave.request_approval.length === 0 ? 'Waiting for Approval' : leave.request_approval.status === 'rejected' ? 'Rejected' : 'Approved'}</span>
                                             </td>
                                             <td>
-                                                <a href="" className='me-2 text-dark'><i className='fa fa-edit me-2'></i>Edit</a>
-                                                <a href="" className=' text-dark'><i className='fa fa-trash me-2'></i>Delete</a>
+                                                {leave.request_approval.length === 0 && (
+                                                    <>
+                                                        <a href="" className='me-2 text-dark'><i className='fa fa-edit me-2'></i>Edit</a>
+                                                        <a href="" className=' text-dark'><i className='fa fa-trash me-2'></i>Delete</a>
+                                                    </>
+                                                )}
                                             </td>
                                         </tr>
                                     ))}

@@ -43,13 +43,20 @@ class AccountProfileController extends Controller
     public function leaveAccount($leaves)
     {
         try {
-            AccountLeaveType::where("account_id", Auth::user()->account_id)->delete();
             foreach ($leaves as $key => $leave) {
-                AccountLeaveType::create([
-                    "account_id" => Auth::user()->account_id,
-                    "leave_type" => $leave['leave_name'],
-                    "leave_amount" => $leave['amount'],
-                ]);
+                if ($leave['id'] != "") {
+                    $getLeave = AccountLeaveType::where("account_id", Auth::user()->account_id)->where('id', $leave["id"])->first();
+                    $getLeave->account_id = Auth::user()->account_id;
+                    $getLeave->leave_type = $leave['leave_name'];
+                    $getLeave->leave_amount = $leave['amount'];
+                    $getLeave->save();
+                } else {
+                    AccountLeaveType::create([
+                        "account_id" => Auth::user()->account_id,
+                        "leave_type" => $leave['leave_name'],
+                        "leave_amount" => $leave['amount'],
+                    ]);
+                }
             }
             return [
                 "status" => 1,
@@ -67,6 +74,6 @@ class AccountProfileController extends Controller
     /* get all leaves for this account */
     public function getAllLeaves()
     {
-        return AccountLeaveType::select('leave_type as leave_name', 'leave_amount as amount')->where('account_id', Auth::user()->account_id)->get();
+        return AccountLeaveType::select('id', 'leave_type as leave_name', 'leave_amount as amount')->where('account_id', Auth::user()->account_id)->get();
     }
 }

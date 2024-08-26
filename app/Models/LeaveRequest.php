@@ -23,7 +23,7 @@ class LeaveRequest extends Model
 
     public function requestApproval()
     {
-        return $this->hasMany(LeaveRequestApproval::class, 'leave_id', 'id');
+        return $this->hasOne(LeaveRequestApproval::class, 'leave_id', 'id');
     }
     public function leaveType()
     {

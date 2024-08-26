@@ -10,17 +10,18 @@ use Illuminate\Mail\Mailables\Content;
 use Illuminate\Mail\Mailables\Envelope;
 use Illuminate\Queue\SerializesModels;
 
-class leaveApprovalMail extends Mailable
+class leaveRequestApproveMail extends Mailable
 {
     use Queueable, SerializesModels;
 
     /**
      * Create a new message instance.
      */
+
     protected $data;
-    public function __construct($mailData)
+    public function __construct($data)
     {
-        $this->data = $mailData;
+        $this->data = $data;
     }
 
     /**
@@ -30,7 +31,7 @@ class leaveApprovalMail extends Mailable
     {
         return new Envelope(
             from: new Address('soumyamanna180898@gmail.com', "MR. Tracker"),
-            subject: "New Leave Request",
+            subject: "Leave Request {$this->data['action']}",
         );
     }
 
@@ -40,7 +41,7 @@ class leaveApprovalMail extends Mailable
     public function content(): Content
     {
         return new Content(
-            view: 'mails.leave_approve_mail',
+            view: 'mails.leave_request_approval_mail',
             with: $this->data,
         );
     }

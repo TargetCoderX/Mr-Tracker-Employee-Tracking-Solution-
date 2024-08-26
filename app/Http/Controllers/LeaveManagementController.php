@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Mail\leaveApprovalMail;
+use App\Mail\leaveRequestApproveMail;
 use App\Models\AccountLeaveType;
 use App\Models\LeaveRequest;
 use App\Models\LeaveRequestApproval;
@@ -144,7 +145,7 @@ class LeaveManagementController extends Controller
     public function actionLeave(Request $request)
     {
         try {
-            $getLeave = LeaveRequest::where('leave_UUID', $request->leave_id)->first();
+            $getLeave = LeaveRequest::where('leave_UUID', $request->leave_id)->with(['userData','leaveType'])->first();
             if ($getLeave) {
                 // dd(Carbon::today()->toDateString());
                 LeaveRequestApproval::create([
@@ -155,6 +156,13 @@ class LeaveManagementController extends Controller
                     'action_date' => Carbon::today()->toDateString(),
                     'reason' => "",
                 ]);
+                $data = [
+                    "user" => $getLeave->userData,
+                    "action_user" => Auth::user(),
+                    "action" => $request->action == 'approve' ? 'Approved' : 'Rejected',
+                    "leave_data" => $getLeave,
+                ];
+                Mail::to($getLeave->userData->email)->send(new leaveRequestApproveMail($data));
             }
             return response()->json([
                 "status" => 1,
