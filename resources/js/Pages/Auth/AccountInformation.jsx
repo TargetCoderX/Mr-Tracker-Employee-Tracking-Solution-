@@ -97,7 +97,7 @@ function AccountInformation() {
                         <input type="number" value={accountDetailsForm.pin_code} onChange={(e) => handleChange(e)} name='pin_code' placeholder='Pin Code' className="form-control" required />
                     </div>
                     <div className="text-center">
-                        <button className="btn btn-primary btn-sm">Save Information</button>
+                        <button className="btn btn-primary">Save Information</button>
                     </div>
                 </div>
             </form>

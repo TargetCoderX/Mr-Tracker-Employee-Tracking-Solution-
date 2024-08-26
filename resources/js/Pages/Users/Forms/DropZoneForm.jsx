@@ -1,11 +1,15 @@
 import axios from 'axios';
 import React, { useState } from 'react';
 import { toast } from 'react-toastify';
+import { useDispatch } from 'react-redux';
+import { hideLoader, showLoader } from '@/redux/actionTypes/actionTypes';
 
-function DropZoneForm({userList}) {
+function DropZoneForm({ userList }) {
     const [dragOver, setDragOver] = useState(false);
     const [dropZoneText, setdropZoneText] = useState("Drag and drop files here or click to upload");
     const [files, setfiles] = useState(null);
+    const dispatch = useDispatch();
+
     const handleDragOver = (event) => {
         event.preventDefault();
         setDragOver(true);
@@ -42,6 +46,7 @@ function DropZoneForm({userList}) {
 
     const uploadFile = async (e) => {
         e.preventDefault();
+        dispatch(showLoader())
         const formData = new FormData();
         for (let i = 0; i < files.length; i++) {
             formData.append("files[]", files[i]);  // Append each file
@@ -59,6 +64,7 @@ function DropZoneForm({userList}) {
         }
         else
             toast.error(response.data.message);
+        dispatch(hideLoader())
     }
 
     return (

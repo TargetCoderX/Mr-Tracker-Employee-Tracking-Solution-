@@ -1,15 +1,19 @@
 import axios from 'axios';
 import React, { useEffect, useState } from 'react';
 import { toast } from 'react-toastify';
+import { useDispatch } from 'react-redux';
+import { hideLoader, showLoader } from '@/redux/actionTypes/actionTypes';
 
 function ManuallyAddUsersForm({ userList, roles, userData = null }) {
     const [formData, setformData] = useState("");
+    const dispatch = useDispatch();
     const handleChange = (e) => {
         const { name, value } = e.target;
         setformData({ ...formData, [name]: value });
     }
     const submitForm = async (e) => {
         e.preventDefault();
+        dispatch(showLoader())
         let response;
         if (userData === null)
             response = await axios.post(route('api.manually-save-users'), formData);
@@ -23,6 +27,7 @@ function ManuallyAddUsersForm({ userList, roles, userData = null }) {
         else {
             toast.error(response.data.message)
         }
+        dispatch(hideLoader())
     }
     useEffect(() => {
         if (userData !== null)

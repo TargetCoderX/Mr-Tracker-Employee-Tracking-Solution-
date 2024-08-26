@@ -6,15 +6,19 @@ import Modal from '@/Compponents/modals/Modal';
 import axios from 'axios';
 import { toast } from 'react-toastify';
 import { useEffect } from 'react';
+import { useDispatch } from 'react-redux';
+import { hideLoader, showLoader } from '@/redux/actionTypes/actionTypes';
 
 function LeaveRequests({ auth }) {
     const query = usePage();
     const uuid = new URLSearchParams(query.url.split('?')[1]).get('uuid');
     const [leaveDetails, setleaveDetails] = useState("");
+    const dispatch = useDispatch();
     useEffect(() => {
         if (uuid !== null) {
             (async () => {
                 try {
+                    dispatch(showLoader());
                     const response = await axios.get(route('api.get-leave-details', { uuid }));
                     if (response.data.status == 1) {
                         const a = document.createElement('a');
@@ -30,13 +34,14 @@ function LeaveRequests({ auth }) {
                 } catch (error) {
                     toast.error("Something went wrong");
                 }
-
+                dispatch(hideLoader());
             })()
         }
     }, uuid);
 
     const actionTaken = async (data) => {
         try {
+            dispatch(showLoader());
             const response = await axios.post(route('api.action-leave'), data)
             if (response.data.status == 1) {
                 toast.success(response.data.message);
@@ -46,6 +51,7 @@ function LeaveRequests({ auth }) {
         } catch (error) {
             toast.error("Something went wrong");
         }
+        dispatch(hideLoader());
     }
     return (
         <Authenticated user={auth}>
