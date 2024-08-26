@@ -12,7 +12,7 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('leave_request', function (Blueprint $table) {
-            $table->float('days')->nullable();
+            $table->string('leave_UUID')->nullable();
         });
     }
 
@@ -22,7 +22,7 @@ return new class extends Migration
     public function down(): void
     {
         Schema::table('leave_request', function (Blueprint $table) {
-            $table->dropIfExists('days');
+            $table->dropColumn('leave_UUID');
         });
     }
 };

@@ -20,7 +20,7 @@ class LeaveManagementController extends Controller
     {
         $getAllLeaveTypes = $this->getAllLeaves();
         $getMemberLeaveList = $this->memberLeaveList();
-        return Inertia::render('Leave_Management/Member_leave/MemberLeave', ['accountLeaves' => $getAllLeaveTypes]);
+        return Inertia::render('Leave_Management/Member_leave/MemberLeave', ['accountLeaves' => $getAllLeaveTypes, 'requestedLeaves' => $getMemberLeaveList]);
     }
 
     /* get all leaves for this account */
@@ -51,7 +51,7 @@ class LeaveManagementController extends Controller
     {
         $getLeaves = LeaveRequest::where("account_id", Auth::user()->account_id)
             ->where('user_id', Auth::id())
-            ->with('requestApproval')
+            ->with(['requestApproval', 'leaveType'])
             ->get();
         return $getLeaves;
     }
@@ -87,7 +87,7 @@ class LeaveManagementController extends Controller
                 'days' => $dayDiff,
             ]);
             $data = [
-                "leave_id" => $leaveRecord->id,
+                "leave_id" => $leaveRecord->leave_UUID,
                 "requester_first_name" => Auth::user()->first_name,
                 "requester_last_name" => Auth::user()->last_name,
                 "start_date" => $request->start_date,
@@ -113,5 +113,59 @@ class LeaveManagementController extends Controller
     }
 
     /* leave approve */
-    public function approveLeave($id) {}
+    public function approveLeave($leave_uuid)
+    {
+        return redirect()->route('leave-requests', ['uuid' => $leave_uuid]);
+    }
+
+    /* leave requests */
+    public function leaveRequests()
+    {
+        return Inertia::render('Leave_Management/Leave_requests/LeaveRequests');
+    }
+
+    /* get leave details */
+    public function getLeaveDetails($uuid)
+    {
+        try {
+            $getLeave = LeaveRequest::where('leave_UUID', $uuid)
+                ->with(['requestApproval', 'leaveType', 'userData'])
+                ->first();
+            if ($getLeave->exists())
+                return response()->json(['status' => 1, 'message' => "", 'data' => $getLeave]);
+            else
+                return response()->json(['status' => 0, 'message' => "Something went wrong"]);
+        } catch (\Throwable $th) {
+            return response()->json(['status' => 0, 'message' => "Something went wrong", "error" => $th->getMessage()]);
+        }
+    }
+
+    /* action leave */
+    public function actionLeave(Request $request)
+    {
+        try {
+            $getLeave = LeaveRequest::where('leave_UUID', $request->leave_id)->first();
+            if ($getLeave) {
+                // dd(Carbon::today()->toDateString());
+                LeaveRequestApproval::create([
+                    'leave_id' => $getLeave->id,
+                    'account_id' => Auth::user()->account_id,
+                    'action_taken_by' => Auth::id(),
+                    'status' => $request->action == 'approve' ? 'approved' : 'rejected',
+                    'action_date' => Carbon::today()->toDateString(),
+                    'reason' => "",
+                ]);
+            }
+            return response()->json([
+                "status" => 1,
+                "message" => "Leave Request Approved",
+            ]);
+        } catch (\Throwable $th) {
+            return response()->json([
+                "status" => 0,
+                "message" => "Something went wrong",
+                "error" => $th->getMessage(),
+            ]);
+        }
+    }
 }

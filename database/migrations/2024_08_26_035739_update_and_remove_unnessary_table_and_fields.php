@@ -11,9 +11,10 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::table('leave_request', function (Blueprint $table) {
-            $table->float('days')->nullable();
+        Schema::table('leave_request_approval', function (Blueprint $table) {
+            $table->renameColumn('action_talen_by', 'action_taken_by');
         });
+        Schema::dropIfExists('user_leave_record');
     }
 
     /**
@@ -21,8 +22,8 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::table('leave_request', function (Blueprint $table) {
-            $table->dropIfExists('days');
+        Schema::table('leave_request_approval', function (Blueprint $table) {
+            //
         });
     }
 };

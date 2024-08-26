@@ -9,11 +9,10 @@ import axios from 'axios';
 import { toast } from 'react-toastify';
 
 function MemberLeave({ auth }) {
-    const { accountLeaves } = usePage().props;
+    const { accountLeaves, requestedLeaves } = usePage().props;
     const [leaves, setleaves] = useState("");
     const [formTitle, setformTitle] = useState("");
     const [actionType, setactionType] = useState("");
-
     useEffect(() => {
         setleaves(accountLeaves);
     }, [accountLeaves]);
@@ -24,6 +23,7 @@ function MemberLeave({ auth }) {
             const response = await axios.post(route('api.save-member-leave'), data);
             if (response.data.status == 1) {
                 toast.success(response.data.message);
+                document.getElementById("modalClose").click();
             } else {
                 toast.error(response.data.message);
             }
@@ -31,6 +31,17 @@ function MemberLeave({ auth }) {
 
         }
     }
+
+    /* convert date to special format */
+    const changeDateFormat = (dateString) => {
+        const date = new Date(dateString);
+        return date.toLocaleDateString('en-US', {
+            year: 'numeric',
+            month: 'long',
+            day: 'numeric',
+        });
+    }
+
     return (
         <Authenticated user={auth}>
             <div className="row">
@@ -59,17 +70,23 @@ function MemberLeave({ auth }) {
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    <tr>
-                                        <th scope="row">1</th>
-                                        <td>Mark</td>
-                                        <td>Otto</td>
-                                        <td>@mdo</td>
-                                        <td>@mdo</td>
-                                        <td>@mdo</td>
-                                        <td>
-                                            <span className="badge bg-danger rounded-pill">Danger</span>
-                                        </td>
-                                    </tr>
+                                    {requestedLeaves && requestedLeaves.map((leave, index) => (
+                                        <tr key={index}>
+                                            <th scope="row">{index + 1}</th>
+                                            <td>{changeDateFormat(leave.start_date)}</td>
+                                            <td>{changeDateFormat(leave.end_date)}</td>
+                                            <td>{leave.leave_type.leave_type}</td>
+                                            <td>{leave.leave_shift}</td>
+                                            <td>{leave.reason_of_leave}</td>
+                                            <td>
+                                                <span className={`badge ${leave.request_approval.length === 0 ? 'bg-warning' : leave.request_approval.status === 0 ? 'bg-danger' : 'bg-success'} rounded-pill w-100`}>{leave.request_approval.length === 0 ? 'Waiting for Approval' : leave.request_approval.status === 0 ? 'Rejected' : 'Approved'}</span>
+                                            </td>
+                                            <td>
+                                                <a href="" className='me-2 text-dark'><i className='fa fa-edit me-2'></i>Edit</a>
+                                                <a href="" className=' text-dark'><i className='fa fa-trash me-2'></i>Delete</a>
+                                            </td>
+                                        </tr>
+                                    ))}
                                 </tbody>
                             </table>
                         </div>

@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Str;
 
 class LeaveRequest extends Model
 {
@@ -23,5 +24,22 @@ class LeaveRequest extends Model
     public function requestApproval()
     {
         return $this->hasMany(LeaveRequestApproval::class, 'leave_id', 'id');
+    }
+    public function leaveType()
+    {
+        return $this->hasOne(AccountLeaveType::class, 'id', 'leave_type');
+    }
+    public function userData()
+    {
+        return $this->hasOne(User::class, 'id', 'user_id');
+    }
+    public static function boot()
+    {
+        parent::boot();
+        static::creating(function ($model) {
+            if (empty($model->leave_UUID)) {
+                $model->leave_UUID = (string) Str::uuid();
+            }
+        });
     }
 }

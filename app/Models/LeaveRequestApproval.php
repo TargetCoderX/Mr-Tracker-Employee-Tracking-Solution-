@@ -12,9 +12,9 @@ class LeaveRequestApproval extends Model
     protected $fillable = [
         'leave_id',
         'account_id',
-        'approved_by',
+        'action_taken_by',
         'status',
-        'approval_date',
+        'action_date',
         'reason',
     ];
 }

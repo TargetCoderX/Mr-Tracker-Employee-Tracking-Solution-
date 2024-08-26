@@ -16,7 +16,7 @@ function LeaveRequestForm({ accountLeaves, applyLeave }) {
                         <option value="" style={{ display: "none" }}>Select Leave Type</option>
                         {
                             accountLeaves && accountLeaves.map((leave, index) => (
-                                <option value={leave.id} key={index}>{leave.leave_name} ({leave.amount})</option>
+                                <option value={leave.id} key={index}>{leave.leave_name} ({leave.remaining_amount})</option>
                             ))
                         }
                     </select>
