@@ -98,12 +98,18 @@ class LeaveManagementController extends Controller
                 "reason_of_leave" => $request->reason_of_leave,
                 "total_days" => $dayDiff,
             ];
+            $mail = config('constraints.development_mail_id');
+            if (env('APP_ENV') == 'production')
+                $mail = strtolower(Auth::user()->email);
 
-            // Mail::to(strtolower(Auth::user()->email))->bcc('mannasoumya009@gmail.com')->send(new leaveApprovalMail($data));
-            Mail::to(strtolower('soumya.m@aqbsolutions.com'))->bcc('mannasoumya009@gmail.com')->send(new leaveApprovalMail($data));
+            Mail::to($mail)->send(new leaveApprovalMail($data));
+            $getAllLeaveTypes = $this->getAllLeaves();
+            $getMemberLeaveList = $this->memberLeaveList();
             return [
                 "status" => 1,
-                "message" => "Leave applied, and pending for approval"
+                "message" => "Leave applied, and pending for approval",
+                "getAllLeaveTypes" => $getAllLeaveTypes,
+                "getMemberLeaveList" => $getMemberLeaveList,
             ];
         } catch (\Throwable $th) {
             return [
@@ -145,9 +151,8 @@ class LeaveManagementController extends Controller
     public function actionLeave(Request $request)
     {
         try {
-            $getLeave = LeaveRequest::where('leave_UUID', $request->leave_id)->with(['userData','leaveType'])->first();
+            $getLeave = LeaveRequest::where('leave_UUID', $request->leave_id)->with(['userData', 'leaveType'])->first();
             if ($getLeave) {
-                // dd(Carbon::today()->toDateString());
                 LeaveRequestApproval::create([
                     'leave_id' => $getLeave->id,
                     'account_id' => Auth::user()->account_id,
@@ -162,12 +167,45 @@ class LeaveManagementController extends Controller
                     "action" => $request->action == 'approve' ? 'Approved' : 'Rejected',
                     "leave_data" => $getLeave,
                 ];
-                Mail::to($getLeave->userData->email)->send(new leaveRequestApproveMail($data));
+                $mail = config('constraints.development_mail_id');
+                if (env('APP_ENV') == 'production')
+                    $mail = strtolower($getLeave->userData->email);
+                Mail::to($mail)->send(new leaveRequestApproveMail($data));
             }
             return response()->json([
                 "status" => 1,
                 "message" => "Leave Request Approved",
             ]);
+        } catch (\Throwable $th) {
+            return response()->json([
+                "status" => 0,
+                "message" => "Something went wrong",
+                "error" => $th->getMessage(),
+            ]);
+        }
+    }
+
+    // delete leave request
+    public function deleteLeaveRequests($id)
+    {
+        try {
+            $getLeave = LeaveRequest::where('leave_UUID', $id);
+            if ($getLeave->exists()) {
+                $getLeave->delete();
+                $getAllLeaveTypes = $this->getAllLeaves();
+                $getMemberLeaveList = $this->memberLeaveList();
+                return response()->json([
+                    "status" => 1,
+                    "message" => "Leave Request Deleted",
+                    "getAllLeaveTypes" => $getAllLeaveTypes,
+                    "getMemberLeaveList" => $getMemberLeaveList,
+                ]);
+            } else {
+                return response()->json([
+                    "status" => 0,
+                    "message" => "Something went wrong",
+                ]);
+            }
         } catch (\Throwable $th) {
             return response()->json([
                 "status" => 0,

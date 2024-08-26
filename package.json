@@ -20,9 +20,11 @@
         "vite": "^5.0"
     },
     "dependencies": {
+        "@reduxjs/toolkit": "^2.2.7",
         "he": "^1.2.0",
         "react-beautiful-dnd": "^13.1.1",
         "react-select": "^5.8.0",
+        "react-spinners": "^0.14.1",
         "react-toastify": "^10.0.5",
         "sweetalert": "^2.1.2"
     }

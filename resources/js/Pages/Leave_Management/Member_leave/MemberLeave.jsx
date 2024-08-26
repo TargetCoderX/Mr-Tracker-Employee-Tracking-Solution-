@@ -7,26 +7,38 @@ import { usePage } from '@inertiajs/react';
 import { useEffect } from 'react';
 import axios from 'axios';
 import { toast } from 'react-toastify';
+import swal from 'sweetalert';
+import Loader from '@/Compponents/loader/Loader';
+import { useDispatch } from 'react-redux';
+import { hideLoader, showLoader } from '@/redux/actionTypes/actionTypes';
 
 function MemberLeave({ auth }) {
     const { accountLeaves, requestedLeaves } = usePage().props;
     const [leaves, setleaves] = useState("");
+    const [requestedLeavesState, setrequestedLeavesState] = useState("");
     const [formTitle, setformTitle] = useState("");
     const [actionType, setactionType] = useState("");
+    const dispatch = useDispatch();
+
     useEffect(() => {
         setleaves(accountLeaves);
+        setrequestedLeavesState(requestedLeaves);
     }, [accountLeaves]);
 
     const submitLeaveApply = async (data) => {
         try {
             data.action = actionType;
+            dispatch(showLoader());
             const response = await axios.post(route('api.save-member-leave'), data);
             if (response.data.status == 1) {
                 toast.success(response.data.message);
                 document.getElementById("modalClose").click();
+                setleaves(response.data.getAllLeaveTypes);
+                setrequestedLeavesState(response.data.getMemberLeaveList);
             } else {
                 toast.error(response.data.message);
             }
+            dispatch(hideLoader());
         } catch (error) {
 
         }
@@ -42,8 +54,35 @@ function MemberLeave({ auth }) {
         });
     }
 
+    /* delete requested leave */
+    const deleteLeaveBeforeApproval = async (e, leave_id) => {
+        e.preventDefault();
+        swal({
+            title: "Are you sure?",
+            text: "Please ensure that you have thoroughly considered your decision before proceeding with the deletion of this leave request, as this action is irreversible.",
+            icon: "warning",
+            buttons: true,
+            dangerMode: true,
+        })
+            .then(async (willDelete) => {
+                if (willDelete) {
+                    dispatch(showLoader());
+                    const response = await axios.get(route('api.delete-leave-requests', { id: leave_id }))
+                    if (response.data.status == 1) {
+                        toast.success(response.data.message);
+                        setleaves(response.data.getAllLeaveTypes);
+                        setrequestedLeavesState(response.data.getMemberLeaveList);
+                    } else {
+                        toast.error(response.data.message);
+                    }
+                    dispatch(hideLoader());
+                }
+            });
+    }
+
     return (
         <Authenticated user={auth}>
+            <Loader />
             <div className="row">
                 <div className="col-lg-12 grid-margin stretch-card">
                     <div className="card">
@@ -70,7 +109,7 @@ function MemberLeave({ auth }) {
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    {requestedLeaves && requestedLeaves.map((leave, index) => (
+                                    {requestedLeavesState && requestedLeavesState.map((leave, index) => (
                                         <tr key={index}>
                                             <th scope="row">{index + 1}</th>
                                             <td>{changeDateFormat(leave.start_date)}</td>
@@ -79,13 +118,13 @@ function MemberLeave({ auth }) {
                                             <td>{leave.leave_shift}</td>
                                             <td>{leave.reason_of_leave}</td>
                                             <td>
-                                                <span className={`badge ${leave.request_approval.length === 0 ? 'bg-warning' : leave.request_approval.status === 'rejected' ? 'bg-danger' : 'bg-success'} rounded-pill w-100`}>{leave.request_approval.length === 0 ? 'Waiting for Approval' : leave.request_approval.status === 'rejected' ? 'Rejected' : 'Approved'}</span>
+                                                <span className={`badge ${leave.request_approval === null ? 'bg-warning' : leave.request_approval.status === 'rejected' ? 'bg-danger' : 'bg-success'} rounded-pill w-100`}>{leave.request_approval === null ? 'Waiting for Approval' : leave.request_approval.status === 'rejected' ? 'Rejected' : 'Approved'}</span>
                                             </td>
                                             <td>
-                                                {leave.request_approval.length === 0 && (
+                                                {leave.request_approval === null && (
                                                     <>
                                                         <a href="" className='me-2 text-dark'><i className='fa fa-edit me-2'></i>Edit</a>
-                                                        <a href="" className=' text-dark'><i className='fa fa-trash me-2'></i>Delete</a>
+                                                        <a href="#" onClick={e => deleteLeaveBeforeApproval(e, leave.leave_UUID)} className=' text-dark'><i className='fa fa-trash me-2'></i>Delete</a>
                                                     </>
                                                 )}
                                             </td>

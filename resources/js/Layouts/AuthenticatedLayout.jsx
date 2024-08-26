@@ -1,3 +1,4 @@
+import Loader from '@/Compponents/loader/Loader';
 import Footer from '@/Compponents/Partials/Footer';
 import NavBar from '@/Compponents/Partials/NavBar';
 import Sidebar from '@/Compponents/Partials/Sidebar';
@@ -6,6 +7,7 @@ import { ToastContainer } from 'react-toastify';
 export default function Authenticated({ user, header, children }) {
     return (
         <>
+            <Loader />
             <ToastContainer />
             <NavBar user={user.user} />
             <div className="container-fluid page-body-wrapper">

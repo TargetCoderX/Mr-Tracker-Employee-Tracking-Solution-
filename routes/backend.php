@@ -60,6 +60,7 @@ Route::prefix('api')->as('api.')->group(function () {
             Route::post("/save-member-leave", 'saveMemberLeave')->name('save-member-leave');
             Route::get("/get-leave-details/{uuid}", 'getLeaveDetails')->name('get-leave-details');
             Route::post("/action-leave", 'actionLeave')->name('action-leave');
+            Route::get('/delete-leave-requests/{id}', 'deleteLeaveRequests')->name('delete-leave-requests');
         });
 
         /* account settings group */
