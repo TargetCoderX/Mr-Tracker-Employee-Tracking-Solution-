@@ -26,7 +26,7 @@ function Kanban({ auth }) {
             newBoards.project_id = project_id;
             const response = await axios.post(route('api.save-board'), newBoards)
             if (response.data.status == 1) {
-                setboards([...boards, newBoards]);
+                setboards(response.data.boards);
                 toast.success(response.data.message);
             } else {
                 toast.error(response.data.message);
