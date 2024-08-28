@@ -58,6 +58,7 @@ Route::middleware('auth')->group(function () {
             Route::get('/member-leaves', 'showMemberLeavePage')->name('member-leaves');
             Route::get('/approve-leave/{id}', 'approveLeave')->middleware(LeaveUrlProtector::class)->name('approve-leave');
             Route::get('/leave-requests', 'leaveRequests')->name('leave-requests');
+            route::get('/holiday', 'holidayPageShow')->name('holiday');
         });
 
         /* profile controller group */

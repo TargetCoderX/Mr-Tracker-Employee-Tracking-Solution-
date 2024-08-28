@@ -220,4 +220,9 @@ class LeaveManagementController extends Controller
             ]);
         }
     }
+
+    /* show holiday page */
+    public function holidayPageShow(){
+        return Inertia::render('Leave_Management/Holiday_list/HolidayList');
+    }
 }

@@ -50,7 +50,7 @@ function Sidebar() {
                     <div className="collapse" id="leave-request">
                         <ul className="nav flex-column sub-menu">
                             <li className="nav-item"> <Link className="nav-link" href={route('member-leaves')}>Member Leaves</Link></li>
-                            <li className="nav-item"> <Link className="nav-link" href={'#'}>Holiday List</Link></li>
+                            <li className="nav-item"> <Link className="nav-link" href={route('holiday')}>Holiday List</Link></li>
                             <li className="nav-item"> <Link className="nav-link" href={route('leave-requests')}>Requested Leaves</Link></li>
                         </ul>
                     </div>

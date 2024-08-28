@@ -4,6 +4,7 @@ import { createRoot } from 'react-dom/client';
 import { createInertiaApp } from '@inertiajs/react';
 import { resolvePageComponent } from 'laravel-vite-plugin/inertia-helpers';
 import 'react-toastify/dist/ReactToastify.css';
+import 'react-big-calendar/lib/css/react-big-calendar.css';
 const appName = import.meta.env.VITE_APP_NAME || 'Laravel';
 import { Provider } from 'react-redux';
 import store from './redux/store';
