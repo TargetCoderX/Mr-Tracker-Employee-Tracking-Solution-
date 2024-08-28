@@ -8,6 +8,7 @@ use App\Http\Controllers\RolesController;
 use App\Http\Controllers\UserController;
 use App\Http\Middleware\AccountDetailsForceFillup;
 use App\Http\Middleware\kanbanBoardProtector;
+use App\Http\Middleware\LeaveUrlProtector;
 use App\Models\AccountInformation;
 use Illuminate\Auth\Middleware\Authenticate;
 use Illuminate\Foundation\Application;
@@ -55,9 +56,8 @@ Route::middleware('auth')->group(function () {
         /* leave management controller group */
         Route::controller(LeaveManagementController::class)->group(function () {
             Route::get('/member-leaves', 'showMemberLeavePage')->name('member-leaves');
-            Route::get('/approve-leave/{id}', 'approveLeave')->name('approve-leave');
+            Route::get('/approve-leave/{id}', 'approveLeave')->middleware(LeaveUrlProtector::class)->name('approve-leave');
             Route::get('/leave-requests', 'leaveRequests')->name('leave-requests');
-           
         });
 
         /* profile controller group */

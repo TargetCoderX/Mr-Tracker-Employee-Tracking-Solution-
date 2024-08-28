@@ -12,6 +12,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Facades\URL;
 use Inertia\Inertia;
 
 class LeaveManagementController extends Controller
@@ -97,6 +98,11 @@ class LeaveManagementController extends Controller
                 "leave_shift" => $leaveShift,
                 "reason_of_leave" => $request->reason_of_leave,
                 "total_days" => $dayDiff,
+                "link" => URL::temporarySignedRoute(
+                    'approve-leave',
+                    Carbon::now()->addDays(5),
+                    ['id' => $leaveRecord->leave_UUID]
+                )
             ];
             $mail = config('constraints.development_mail_id');
             if (env('APP_ENV') == 'production')

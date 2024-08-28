@@ -273,8 +273,7 @@
 <w:anchorlock/>
 <v:textbox inset="0px,0px,0px,0px">
 <center dir="false" style="color:#1e2e2a;font-family:Tahoma, Verdana, sans-serif;font-size:18px">
-<![endif]--><a href="{{ route('approve-leave', ['id' => $leave_id]) }}"
-                                                                        style="background-color:transparent;border-bottom:2px solid #AFC3A6;border-left:2px solid #AFC3A6;border-radius:20px;border-right:2px solid #AFC3A6;border-top:2px solid #AFC3A6;color:#1e2e2a;display:inline-block;font-family:'Ubuntu', Tahoma, Verdana, Segoe, sans-serif;font-size:18px;font-weight:300;mso-border-alt:none;padding-bottom:3px;padding-top:3px;text-align:center;text-decoration:none;width:auto;word-break:keep-all;"
+<![endif]--><a href="{{ $link }}" style="background-color:transparent;border-bottom:2px solid #AFC3A6;border-left:2px solid #AFC3A6;border-radius:20px;border-right:2px solid #AFC3A6;border-top:2px solid #AFC3A6;color:#1e2e2a;display:inline-block;font-family:'Ubuntu', Tahoma, Verdana, Segoe, sans-serif;font-size:18px;font-weight:300;mso-border-alt:none;padding-bottom:3px;padding-top:3px;text-align:center;text-decoration:none;width:auto;word-break:keep-all;"
                                                                         target="_blank"><span
                                                                             style="word-break: break-word; padding-left: 20px; padding-right: 20px; font-size: 18px; display: inline-block; letter-spacing: 1px;"><span
                                                                                 style="word-break: break-word; line-height: 27px;">Review
