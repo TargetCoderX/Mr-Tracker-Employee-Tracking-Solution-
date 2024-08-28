@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Mail\projectAssignedMail;
 use App\Models\Board;
 use App\Models\ProjectAssignee;
 use App\Models\Projects;
@@ -12,6 +13,7 @@ use App\Models\User;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Mail;
 use Inertia\Inertia;
 use Illuminate\Support\Str;
 use SebastianBergmann\CodeCoverage\Report\Xml\Project;
@@ -374,6 +376,15 @@ class ProjectsController extends Controller
                 ]);
                 $getAssignedUsers = $this->getProjectUsers($request->project_id);
                 $allUsers = $this->getAllUsers();
+                $user_data = User::where('id', $request->user_id)->with('roleRelation')->first()->toArray();
+                $data = [
+                    "project_data" => Projects::where('project_id', $request->project_id)->first()->toArray(),
+                    "user_data" => $user_data,
+                ];
+                $mail = config('constraints.development_mail_id');
+                if (env('APP_ENV') == 'production')
+                    $mail = strtolower($user_data->email);
+                Mail::to($mail)->send(new projectAssignedMail($data));
                 return response()->json([
                     "status" => 1,
                     "message" => "User added to project successfully and informed to user as well",

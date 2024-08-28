@@ -9,6 +9,8 @@ import axios from 'axios';
 import { toast } from 'react-toastify';
 import swal from 'sweetalert';
 import ProjectUsersList from './Forms/ProjectUsersList';
+import { useDispatch } from 'react-redux';
+import { hideLoader, showLoader } from '@/redux/actionTypes/actionTypes';
 
 function Kanban({ auth }) {
     const { project_boards, project_id, task_types, assigned_users, all_users } = usePage().props;
@@ -20,6 +22,7 @@ function Kanban({ auth }) {
     const [assignedUsers, setassignedUsers] = useState("");
     const [allUsers, setallUsers] = useState([]);
     const [taskData, settaskData] = useState(null);
+    const dispatch = useDispatch();
 
     const addNewGroup = async (newBoards) => {
         try {
@@ -215,6 +218,7 @@ function Kanban({ auth }) {
     /* user action handler of project */
     const userActionHandler = async (user_id, action) => {
         try {
+            dispatch(showLoader());
             let response = "";
             if (action === 'add')
                 response = await axios.post(route('api.add-users-project'), { project_id, user_id });
@@ -224,6 +228,7 @@ function Kanban({ auth }) {
                 toast.success(response.data.message);
             else
                 toast.error(response.data.message);
+            dispatch(hideLoader());
             setassignedUsers(response.data.assigned_users);
             setallUsers(response.data.all_users);
         } catch (error) {
