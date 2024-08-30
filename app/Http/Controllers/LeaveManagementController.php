@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Mail\leaveApprovalMail;
 use App\Mail\leaveRequestApproveMail;
 use App\Models\AccountLeaveType;
+use App\Models\HolidayLists;
 use App\Models\LeaveRequest;
 use App\Models\LeaveRequestApproval;
 use Carbon\Carbon;
@@ -222,7 +223,52 @@ class LeaveManagementController extends Controller
     }
 
     /* show holiday page */
-    public function holidayPageShow(){
-        return Inertia::render('Leave_Management/Holiday_list/HolidayList');
+    public function holidayPageShow()
+    {
+        $evnets = $this->getAllEvents();
+        return Inertia::render('Leave_Management/Holiday_list/HolidayList', ["getEvents" => $evnets]);
+    }
+
+    /* save holiday leaves */
+    public function createHolidayList(Request $request)
+    {
+        try {
+            if (count($request->listArray) > 0) {
+                /* delete all leave for the selected year and re enter */
+                HolidayLists::where('account_id', Auth::user()->account_id)
+                    ->where('year', $request->year)
+                    ->delete();
+                /* re-enter the values */
+                foreach ($request->listArray as $key => $holiday) {
+                    HolidayLists::create([
+                        "account_id" => Auth::user()->account_id,
+                        "added_by_user" => Auth::id(),
+                        "from_date" => $holiday['start'] ?? '',
+                        "to_date" => $holiday['end'] ?? '',
+                        "holiday_name" => $holiday['title'] ?? '',
+                        "holiday_description" => $holiday['description'] ?? '',
+                        "year" => $request->year,
+                    ]);
+                }
+            }
+            return response()->json([
+                "status" => 1,
+                "message" => "Holiday List Updated",
+                "events" => $this->getAllEvents(),
+            ]);
+        } catch (\Throwable $th) {
+            return response()->json([
+                "status" => 1,
+                "message" => "",
+                "error" => $th->getMessage(),
+                "events" => $this->getAllEvents(),
+            ]);
+        }
+    }
+
+    /* public function get all events */
+    public function getAllEvents()
+    {
+        return HolidayLists::select("to_date as end", "from_date as start", "holiday_name as title")->where('account_id', Auth::user()->account_id)->get();
     }
 }

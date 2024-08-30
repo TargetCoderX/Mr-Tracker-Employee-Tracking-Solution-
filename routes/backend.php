@@ -61,6 +61,7 @@ Route::prefix('api')->as('api.')->group(function () {
             Route::get("/get-leave-details/{uuid}", 'getLeaveDetails')->name('get-leave-details');
             Route::post("/action-leave", 'actionLeave')->name('action-leave');
             Route::get('/delete-leave-requests/{id}', 'deleteLeaveRequests')->name('delete-leave-requests');
+            Route::post('/create-holiday-list', 'createHolidayList')->name('create-holiday-list');
         });
 
         /* account settings group */
