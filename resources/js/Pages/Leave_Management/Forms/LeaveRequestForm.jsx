@@ -2,13 +2,39 @@ import React, { useState } from 'react';
 
 function LeaveRequestForm({ accountLeaves, applyLeave }) {
     const [formData, setformData] = useState({ leave_type: "", start_date: "", end_date: "", leave_shift: "", reason_of_leave: "" });
+    const [error, seterror] = useState({});
     const handleChange = (e) => {
         const { name, value } = e.target;
         setformData({ ...formData, [name]: value });
     }
 
+    const checkAndapply = () => {
+        const selectedLeaveType = formData.leave_type;
+        const leaveTypeSelected = accountLeaves.filter((leave) => leave.id == selectedLeaveType)?.[0];
+        const availableAmount = leaveTypeSelected?.remaining_amount
+        const leave_type_name = leaveTypeSelected?.leave_name
+        let daydiff = 0.5;
+        if (formData.leave_shift == 'full_day')
+            daydiff = dayDiff(formData.start_date, formData.end_date);
+        if (availableAmount >= daydiff) {
+            applyLeave(formData)
+        } else {
+            seterror({ ...error, dayDifferror: `You have only ${availableAmount} leaves available of ${leave_type_name} ` })
+        }
+
+    }
+
+    const dayDiff = (date1, date2) => {
+        const startDate = new Date(date1);
+        const endDate = new Date(date2);
+        const diffInTime = endDate - startDate;
+        const diffInDays = diffInTime / (1000 * 60 * 60 * 24);
+        return diffInDays;
+    }
+
+
     return (
-        <form onSubmit={(e) => { e.preventDefault(); applyLeave(formData) }}>
+        <form onSubmit={(e) => { e.preventDefault(); checkAndapply() }}>
             <div className="row">
                 <div className="col-md-12 mb-2">
                     <label htmlFor="" className='form-label'>Leave Type</label>
@@ -29,6 +55,7 @@ function LeaveRequestForm({ accountLeaves, applyLeave }) {
                     <label htmlFor="" className='form-label'>End Date</label>
                     <input value={formData.end_date} required onChange={(e) => { handleChange(e) }} type="date" name="end_date" id="end_date" className="form-control" />
                 </div>
+                {error && error.dayDifferror && (<p className='text-danger'><strong>{error.dayDifferror}</strong></p>)}
                 <div className="col-md-12 mb-2">
                     <label htmlFor="" className='form-label'>Leave Shift</label>
                     <select value={formData.leave_shift} required onChange={(e) => { handleChange(e) }} name="leave_shift" id="leave_shift" className='form-control text-dark'>
