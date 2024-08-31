@@ -50,6 +50,7 @@ function HolidayList({ auth }) {
 
     /* slot selection function */
     const handleSelectSlot = ({ start, end }) => {
+        console.log(start,end);
         swal({
             title: "Create a new event",
             content: {
@@ -108,7 +109,9 @@ function HolidayList({ auth }) {
 
     // Helper function to format the date for the input field
     const formatDateForInput = (date) => {
-        return date.toISOString().slice(0, 10);
+        const offset = date.getTimezoneOffset();
+        const localDate = new Date(date.getTime() - offset * 60 * 1000);
+        return localDate.toISOString().slice(0, 10);
     };
 
     /* delete button with custom style of event */
