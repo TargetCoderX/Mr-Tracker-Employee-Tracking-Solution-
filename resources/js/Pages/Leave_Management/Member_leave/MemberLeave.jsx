@@ -123,7 +123,6 @@ function MemberLeave({ auth }) {
                                             <td>
                                                 {leave.request_approval === null && (
                                                     <>
-                                                        <a href="" className='me-2 text-dark'><i className='fa fa-edit me-2'></i>Edit</a>
                                                         <a href="#" onClick={e => deleteLeaveBeforeApproval(e, leave.leave_UUID)} className=' text-dark'><i className='fa fa-trash me-2'></i>Delete</a>
                                                     </>
                                                 )}
