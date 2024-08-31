@@ -40,6 +40,7 @@ Route::middleware('auth')->group(function () {
         /* users controller group */
         Route::controller(UserController::class)->group(function () {
             Route::get('/user-list', 'showUserList')->name('user-list');
+            Route::get('/user-view/{id}', 'editUser')->name('user-view');
         });
 
         /* roles controller group */

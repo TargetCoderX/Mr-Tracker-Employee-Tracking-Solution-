@@ -7,6 +7,7 @@ use App\Models\User;
 use App\Models\UserDetails;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Crypt;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Storage;
 use Inertia\Inertia;
@@ -106,7 +107,8 @@ class UserController extends Controller
     /* get all user of this account */
     public function getAllUsers()
     {
-        return User::where('account_id', Auth::user()->account_id)->orderBy('id', 'desc')->with('roleRelation')->paginate(10);
+        $users = User::where('account_id', Auth::user()->account_id)->orderBy('id', 'desc')->with('roleRelation')->paginate(10);
+        return $users;
     }
 
     /* manually save users */
@@ -152,5 +154,12 @@ class UserController extends Controller
         } else {
             return response()->json(["status" => 0, "message" => "User not found"]);
         }
+    }
+
+    /* user view */
+    public function editUser($user_id)
+    {
+        $decryptedId = Crypt::decrypt($user_id);
+        return Inertia::render('Users/UserView');
     }
 }
