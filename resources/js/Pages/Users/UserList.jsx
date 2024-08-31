@@ -12,7 +12,7 @@ function UserList({ auth }) {
     const [userList, setuserList] = useState([]);
     const [roles, setroles] = useState([]);
     const [editUserData, seteditUserData] = useState(null);
-    const dispatch = useDispatch();
+    const [formTitle, setformTitle] = useState("");
 
     useEffect(() => {
         (async () => {
@@ -44,7 +44,7 @@ function UserList({ auth }) {
         }
     };
     const retainKeys = (obj) => {
-        const keysToKeep = ['id', 'first_name', 'last_name', 'email', 'phone', 'role'];
+        const keysToKeep = ['id', 'first_name', 'last_name', 'email', 'phone', 'role', 'is_active'];
         let newObj = {};
         Object.entries(obj).filter(([key, value]) => keysToKeep.includes(key)).forEach(([key, value]) => newObj[key] = value);
         return newObj;
@@ -55,6 +55,48 @@ function UserList({ auth }) {
             seteditUserData(null);
         }
     }, [formType]);
+
+    const userstatusBadge = (userStatus) => {
+        let nameAndColour = {
+            name: "",
+            class: "",
+        }
+        if (userStatus == 1) {
+            nameAndColour.name = "Active";
+            nameAndColour.class = "success";
+        }
+        if (userStatus == 2) {
+            nameAndColour.name = "Resigned";
+            nameAndColour.class = "secondary";
+        }
+        if (userStatus == 3) {
+            nameAndColour.name = "Inactive";
+            nameAndColour.class = "secondary";
+        }
+        if (userStatus == 4) {
+            nameAndColour.name = "Probation";
+            nameAndColour.class = "warning";
+        }
+        if (userStatus == 5) {
+            nameAndColour.name = "Suspended";
+            nameAndColour.class = "info";
+        }
+        if (userStatus == 6) {
+            nameAndColour.name = "Terminated";
+            nameAndColour.class = "danger";
+        }
+        if (userStatus == 7) {
+            nameAndColour.name = "Retired";
+            nameAndColour.class = "secondary";
+        }
+        if (userStatus == 8) {
+            nameAndColour.name = "Contractor";
+            nameAndColour.class = "primary";
+        }
+        return (
+            <span className={`badge bg-${nameAndColour.class} rounded-pill w-100 `}>{nameAndColour.name}</span>
+        )
+    }
 
     return (
         <Authenticated user={auth}>
@@ -68,8 +110,8 @@ function UserList({ auth }) {
                                     <p className="card-description text-dark">Users registered to your account.</p>
                                 </span>
                                 <span>
-                                    <button className="btn btn-primary btn-sm me-1" style={{ width: "150px" }} data-bs-toggle="modal" data-bs-target="#exampleModal" onClick={(e) => { setformType("manualAdder") }}>Manualy Add Users</button>
-                                    <button className="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#exampleModal" style={{ width: "150px" }} onClick={(e) => { setformType("dropzone") }}>Upload CSV</button>
+                                    <button className="btn btn-primary btn-sm me-1" style={{ width: "150px" }} data-bs-toggle="modal" data-bs-target="#exampleModal" onClick={(e) => { setformTitle("For Entering New Users Only"); setformType("manualAdder") }}>Manualy Add Users</button>
+                                    <button className="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#exampleModal" style={{ width: "150px" }} onClick={(e) => { setformTitle("Upload CSV File"); setformType("dropzone") }}>Upload CSV</button>
                                 </span>
                             </div>
                             <div className="table-responsive pt-3">
@@ -97,12 +139,12 @@ function UserList({ auth }) {
                                                     <td> {user.last_name} </td>
                                                     <td className='ellipsis'> {user.email} </td>
                                                     <td className='ellipsis'> {user.phone || `_ _`} </td>
-                                                    <td><span className="badge bg-success rounded-pill">Active</span></td>
-                                                    <td><span className={`badge ${user.role_relation !== null && user.role !== 0 ? 'bg-danger' : 'bg-success'} rounded-pill`}>{user.role_relation !== null && user.role !== 0 ? user.role_relation.role_name : 'Administrator'}</span></td>
+                                                    <td>{userstatusBadge(user.is_active)}</td>
+                                                    <td><span className={`badge ${user.role_relation !== null && user.role !== 0 ? 'bg-danger' : 'bg-success'} rounded-pill w-100`}>{user.role_relation !== null && user.role !== 0 ? user.role_relation.role_name : 'Administrator'}</span></td>
                                                     <td className='text-center'>
                                                         {
                                                             user.role_relation !== null && (
-                                                                <button data-bs-toggle="modal" data-bs-target="#exampleModal" data-bs-placement="top" title="Edit User" className="btn btn-icon btn-primary btn-sm m-1" onClick={(e) => { setformType("manualAdderEdit"), seteditUserData(user) }}><i className='fa fa-edit'></i></button>
+                                                                <button data-bs-toggle="modal" data-bs-target="#exampleModal" data-bs-placement="top" title="Edit User" className="btn btn-icon btn-primary btn-sm m-1" onClick={(e) => { setformType("manualAdderEdit"), seteditUserData(user); setformTitle("Edit this user") }}><i className='fa fa-edit'></i></button>
                                                             )
                                                         }
                                                         <button data-bs-toggle="tooltip" data-bs-placement="top" title="Make Admin" className="btn btn-icon btn-primary btn-sm m-1"><i className='fa fa-user'></i></button>
@@ -120,7 +162,7 @@ function UserList({ auth }) {
                     </div>
                 </div>
             </div>
-            <Modal form={renderForm()} title="For Entering New Users Only" />
+            <Modal form={renderForm()} title={formTitle} />
         </Authenticated>
     );
 }

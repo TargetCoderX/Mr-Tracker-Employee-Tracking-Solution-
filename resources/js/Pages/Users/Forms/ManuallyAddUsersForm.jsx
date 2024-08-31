@@ -47,7 +47,7 @@ function ManuallyAddUsersForm({ userList, roles, userData = null }) {
                 <label htmlFor="">Phone</label>
                 <input required value={formData && formData.phone} name='phone' onChange={(e) => { handleChange(e) }} type="text" placeholder='Phone' className="form-control rounded mb-2" />
                 <label htmlFor="">Role</label>
-                <select required className="form-control rounded mb-2" value={formData && formData.role} name='role' onChange={(e) => { handleChange(e) }}>
+                <select required className="form-control text-dark rounded mb-2" value={formData && formData.role} name='role' onChange={(e) => { handleChange(e) }}>
                     <option value="" style={{ display: 'none' }}>Select Role</option>
                     {
                         roles && roles.map((role, index) => (
@@ -55,6 +55,24 @@ function ManuallyAddUsersForm({ userList, roles, userData = null }) {
                         ))
                     }
                 </select>
+                {
+                    userData !== null && (
+                        <>
+                            <label htmlFor="">Status</label>
+                            <select name="is_active" id="is_active" className="form-control text-dark" value={formData && formData.is_active} onChange={(e) => { handleChange(e) }}>
+                                <option value="" style={{ display: 'none' }}>Select Status</option>
+                                <option value="1">Active</option>
+                                <option value="2">Resigned</option>
+                                <option value="3">Inactive</option>
+                                <option value="4">Probation</option>
+                                <option value="5">Suspended</option>
+                                <option value="6">Terminated</option>
+                                <option value="7">Retired</option>
+                                <option value="8">Contractor</option>
+                            </select>
+                        </>
+                    )
+                }
                 <div className="text-center mt-2">
                     <button type='submit' className="btn btn-primary btn-sm w-50">
                         {

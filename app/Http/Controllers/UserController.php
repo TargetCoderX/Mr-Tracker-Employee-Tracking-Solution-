@@ -142,6 +142,7 @@ class UserController extends Controller
             $findUser->email = $request->email;
             $findUser->role = $request->role;
             $findUser->phone = $request->phone;
+            $findUser->is_active = $request->is_active;
             $status = $findUser->save();
             $getAllUsers = $this->getAllUsers();
             if ($status)
